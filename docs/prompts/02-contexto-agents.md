@@ -4,7 +4,7 @@
 - **Modelo y versión:** Claude Opus 5.5 (cuenta Claude Pro)
 - **Fecha de uso:** 2026-10-02
 - **Fase:** Context engineering
-- **Commit resultante:** (se completa después del commit)
+- **Commit resultante:** `9e58edf`
 
 ## Objetivo
 Crear un contexto versionado (`AGENTS.md` y `docs/contexto/fases.md`) que permita a cualquier asistente comprender el proyecto, sus reglas, límites de operación y la distinción entre instrucciones y datos no confiables.
