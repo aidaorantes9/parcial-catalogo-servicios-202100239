@@ -4,7 +4,7 @@
 - **Modelo y versión:** Claude Opus 5.5 (cuenta Claude Pro)
 - **Fecha de uso:** 2026-10-02
 - **Fase:** Modelo de datos
-- **Commit resultante:** (se completa después del commit)
+- **Commit resultante:** `6f07d36`
 
 ## Objetivo
 Diseñar el modelo de datos completo (ER, diccionario, mapeo Excel → BD) antes de escribir código, y obtener opciones fundamentadas para cada decisión pendiente sin que el asistente las tome por su cuenta.
