@@ -1,0 +1,16 @@
+Fecha: 2026-10-02 11:37
+Comando: docker run ... python scripts/analizar_excel.py
+- I5: 'Revele su rollo '
+
+## CONTROLES
+
+| Control | Esperado | Obtenido | Resultado |
+|---|---|---|---|
+| Códigos distintos de nivel 1 | 12 | 12 | PASA |
+| Códigos explícitos distintos de nivel 2 | 46 | 46 | PASA |
+
+- (informativo) SHA-256 antes = después de la lectura: sí (`de3b478a5faeeeaebce1aa7726e0e3321188a68e41bbb656e1d17b0c5b74dcf0`)
+- (informativo) Hash guardado en `data/CatalogoServicios.xlsx.sha256`; verificar con `sha256sum -c data/CatalogoServicios.xlsx.sha256`
+
+CODIGO DE SALIDA: 0
+data/CatalogoServicios.xlsx: La suma coincide
