@@ -4,7 +4,7 @@
 - **Modelo y versión:** Claude Opus 5.5 (cuenta Claude Pro)
 - **Fecha de uso:** 2026-10-02
 - **Fase:** Análisis de datos
-- **Commit resultante:** (se completa después del commit)
+- **Commit resultante:** `4790583`
 
 ## Objetivo
 Obtener un análisis verificable por código del archivo `data/CatalogoServicios.xlsx` antes de diseñar el modelo, confirmando los controles de importación (12 códigos de nivel 1 y 46 de nivel 2) y los casos especiales del enunciado.
