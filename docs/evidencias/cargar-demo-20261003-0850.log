@@ -1,0 +1,35 @@
+== cargar_demo 2026-10-03 08:50:41 CST ==
+Creada sección: DEMO / DEMO / DEMO / DEMO-INF — Infraestructura (demostración)
+Creado puesto: DEMO / DEMO / DEMO / DEMO-INF / RESP — Responsable de servicios (demostración)
+Creada sección: DEMO / DEMO / DEMO / DEMO-APL — Aplicaciones (demostración)
+Creado puesto: DEMO / DEMO / DEMO / DEMO-APL / RESP — Responsable de servicios (demostración)
+Creado usuario CONSULTA demo.infraestructura (contraseña inutilizable (DEMO_RESPONSABLE_PASSWORD no definida)).
+Creado usuario CONSULTA demo.aplicaciones (contraseña inutilizable (DEMO_RESPONSABLE_PASSWORD no definida)).
+SE.01.01: asignado a DEMO-INF, usuario demo.infraestructura.
+SE.02.02: asignado a DEMO-INF.
+SE.06.01: asignado a DEMO-APL, usuario demo.aplicaciones.
+SE.08.01: asignado a DEMO-APL.
+
+== Asignaciones de demostración válidas ==
+  SE.01.01   DEMO-INF   demo.infraestructura
+  SE.02.02   DEMO-INF   sin usuario
+  SE.06.01   DEMO-APL   demo.aplicaciones
+  SE.08.01   DEMO-APL   sin usuario
+Total: 4 asignaciones, 2 secciones, 2 con usuario responsable.
+Código de salida: 0
+
+== Segunda ejecución (idempotencia) ==
+Ya existe el usuario demo.infraestructura; sin cambios.
+Ya existe el usuario demo.aplicaciones; sin cambios.
+SE.01.01: asignación ya existente; sin cambios.
+SE.02.02: asignación ya existente; sin cambios.
+SE.06.01: asignación ya existente; sin cambios.
+SE.08.01: asignación ya existente; sin cambios.
+
+== Asignaciones de demostración válidas ==
+  SE.01.01   DEMO-INF   demo.infraestructura
+  SE.02.02   DEMO-INF   sin usuario
+  SE.06.01   DEMO-APL   demo.aplicaciones
+  SE.08.01   DEMO-APL   sin usuario
+Total: 4 asignaciones, 2 secciones, 2 con usuario responsable.
+Código de salida: 0

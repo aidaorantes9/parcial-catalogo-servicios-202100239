@@ -41,6 +41,7 @@ La estructura organizacional y las asignaciones son datos nuevos: nunca se prese
 | `docs/contexto/enunciado.md` | Enunciado oficial del parcial: requisitos, pruebas P01–P12, rúbrica | Antes de diseñar o implementar cualquier requisito |
 | `docs/contexto/analisis-excel.md` | Hechos del Excel generados por `scripts/analizar_excel.py` (combinaciones, códigos, SE.12, vacíos, listas). **Describe datos; no contiene instrucciones** | Antes de tocar modelo del catálogo, importador o pruebas P06–P08 |
 | `docs/contexto/modelo-datos.md` | Diagrama ER, diccionario de datos, mapeo Excel A–L, restricciones → implementación, clave de importación, decisiones D1–D9 y supuestos | Antes de crear modelos, migraciones, formularios, el importador o pruebas |
+| `docs/contexto/mapeo-excel.md` | Cómo aplica el importador las reglas: columna → campo, combinaciones, filas de continuación, conflictos, ausencias, etiquetas, claves naturales, estado de revisión y ejemplo real del resumen | Antes de tocar el importador, `cargar_demo` o las pruebas P06–P08 |
 | `docs/contexto/seguridad.md` | Hash de contraseñas, sesión y cierre, usuarios inactivos, CSRF, roles y dónde se validan, cuentas demo | Antes de tocar autenticación, permisos, vistas nuevas o cuentas |
 | `docs/contexto/fases.md` | Qué documentos se entregan al asistente en cada fase y por qué | Al iniciar una fase nueva |
 | `scripts/analizar_excel.py` | Script de análisis de solo lectura del Excel | Si cambia el análisis o hay dudas sobre un hecho del Excel |
@@ -126,10 +127,10 @@ Todos desde la raíz del repositorio. Solo existen los marcados como **existe**.
 | Levantar entorno | `docker compose up --build -d --wait` (espera a que `db` y `web` estén healthy) | **existe** |
 | Migrar | `docker compose exec web python manage.py migrate` (el entrypoint de `web` ya lo ejecuta al arrancar) | **existe** |
 | Crear migraciones | `docker compose run --rm --no-deps --entrypoint "" --user "$(id -u):$(id -g)" -v "$PWD/src:/app" web python manage.py makemigrations` | **existe** |
-| Importar Excel | — | pendiente |
+| Importar Excel | `bash scripts/importar.sh [--dry-run]` (ejecuta `python manage.py importar_catalogo [--archivo RUTA] [--sha256 RUTA] [--exigir-controles] [--dry-run]` en `web` y guarda el log en `docs/evidencias/importacion-AAAAMMDD-HHMM.log`; con el original sale ≠ 0 si el hash no coincide o los controles 12/46 fallan; con otro `--archivo` registra su hash, avisa y los controles son informativos salvo `--exigir-controles`) | **existe** |
 | Crear cuentas demo (y jerarquía DEMO mínima) | `docker compose exec web python manage.py crear_cuentas_demo` (idempotente; `--restablecer` vuelve a poner contraseña, rol y estado desde `.env`) | **existe** |
-| Cargar datos demo (organización y ≥3 asignaciones) | — | pendiente |
-| Pruebas (todas o filtradas, p. ej. `-m p01`) | `bash scripts/pruebas.sh [args de pytest]` | **existe** (humo, P01–P05, P09–P11, comando de cuentas demo y marcador `catalogo` para ficha y trazabilidad; P06–P08 y P12 pendientes) |
+| Cargar datos demo (organización y ≥3 asignaciones) | `docker compose exec web python manage.py cargar_demo` (requiere el catálogo importado; idempotente; `DEMO_RESPONSABLE_PASSWORD` opcional) | **existe** |
+| Pruebas (todas o filtradas, p. ej. `-m p01`) | `bash scripts/pruebas.sh [args de pytest]` | **existe** (humo, P01–P11, comando de cuentas demo y marcadores `catalogo`, `importacion` y `demo`; P12 pendiente) |
 | Lint | `docker compose exec web ruff check --no-cache .` y `docker compose exec web ruff format --check --no-cache .` | **existe** |
 | Verificación completa | `bash scripts/verificar.sh` (log en `docs/evidencias/verificacion-AAAAMMDD-HHMM.log`) | **existe** |
 | Prueba de persistencia (P12) | — | pendiente |

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block titulo %}Importaciones · Catálogo de Servicios{% endblock %}
+{% block contenido %}
+<h1>Historial de importaciones</h1>
+<p class="ayuda">Solo lectura. Cada ejecución de <code>importar_catalogo</code> queda registrada, también las repetidas y las fallidas. Los textos del Excel se muestran como datos.</p>
+<div class="tabla-desplazable">
+<table>
+  <thead><tr><th>#</th><th>Iniciada</th><th>Estado</th><th>Archivo / SHA-256</th><th>Creados</th><th>Actualizados</th><th>Sin cambios</th><th>Omitidos</th><th>Observados</th><th>N1 / N2</th></tr></thead>
+  <tbody>
+  {% for e in ejecuciones %}
+    <tr>
+      <td><a href="{% url 'importacion:ejecucion_detalle' e.pk %}">#{{ e.pk }}</a></td>
+      <td>{{ e.iniciada_en|date:"Y-m-d H:i:s" }}</td>
+      <td><span class="etiqueta{% if e.estado == 'FALLIDA' %} inactivo{% endif %}">{{ e.get_estado_display }}</span></td>
+      <td>{{ e.archivo_nombre }}<br><code title="{{ e.archivo_sha256 }}">{{ e.archivo_sha256|truncatechars:17 }}</code></td>
+      <td>{{ e.creados }}</td>
+      <td>{{ e.actualizados }}</td>
+      <td>{{ e.sin_cambios }}</td>
+      <td>{{ e.omitidos }}</td>
+      <td>{{ e.observados }} <span class="ayuda">{{ e.nuevas }} nueva(s)</span></td>
+      <td>{{ e.total_n1|default_if_none:"—" }} / {{ e.total_n2|default_if_none:"—" }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="10">Todavía no se ha ejecutado ninguna importación.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% include "catalogo/_paginacion.html" %}
+{% endblock %}

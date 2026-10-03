@@ -77,7 +77,8 @@
       <a href="{% url 'organizacion:departamento_lista' %}">Departamentos</a>
       <a href="{% url 'organizacion:seccion_lista' %}">Secciones</a>
       <a href="{% url 'organizacion:puesto_lista' %}">Puestos</a>
-      {% if user.es_admin %}<a href="{% url 'cuentas:usuario_lista' %}">Usuarios</a>{% endif %}
+      {% if user.es_admin %}<a href="{% url 'cuentas:usuario_lista' %}">Usuarios</a>
+      <a href="{% url 'importacion:ejecucion_lista' %}">Importaciones</a>{% endif %}
       <a href="{% url 'cuentas:perfil' %}">Mi perfil</a>
       <span class="quien">{{ user.nombre }} · {{ user.get_rol_display }}</span>
       <form method="post" action="{% url 'cuentas:salir' %}">

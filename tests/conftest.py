@@ -1,6 +1,9 @@
+from io import StringIO
 from types import SimpleNamespace
 
+import openpyxl
 import pytest
+from django.core.management import call_command
 
 from catalogo.models import ClaseServicio, Criticidad, ServicioNivel1, ServicioNivel2, TipoServicio
 from cuentas.models import Rol, Usuario
@@ -118,3 +121,41 @@ def datos_servicio(catalogo):
         return valores
 
     return datos
+
+
+# ---------------------------------------------------------------- importación del Excel
+
+ORIGINAL = "data/CatalogoServicios.xlsx"
+
+
+@pytest.fixture
+def importar(db):
+    """Ejecuta `importar_catalogo` con los argumentos dados y devuelve su salida."""
+
+    def ejecutar(*argumentos):
+        salida = StringIO()
+        call_command("importar_catalogo", *argumentos, stdout=salida)
+        return salida.getvalue()
+
+    return ejecutar
+
+
+@pytest.fixture
+def excel_modificado(tmp_path):
+    """Copia del Excel original con celdas cambiadas, guardada en un directorio temporal.
+
+    El original solo se lee (está montado en solo lectura); nunca se guarda. Devuelve la ruta del
+    libro, que el importador trata como «otro archivo» (no verifica su hash, solo lo registra).
+    """
+
+    def crear(cambios):
+        libro = openpyxl.load_workbook(ORIGINAL)
+        hoja = libro["Servicios Externos"]
+        for celda, valor in cambios.items():
+            hoja[celda].value = valor
+        ruta = tmp_path / "modificado.xlsx"
+        libro.save(ruta)
+        libro.close()
+        return str(ruta)
+
+    return crear

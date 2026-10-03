@@ -1,0 +1,141 @@
+== Verificación 2026-10-03 08:52:07 CST ==
+Commit: b63b77f
+Log: docs/evidencias/verificacion-20261003-0852.log
+
+---- docker compose config ----
+PASA: docker compose config
+
+---- construir y levantar servicios (healthy) ----
+time="2026-10-03T08:52:07-06:00" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+#0 building with "default" instance using docker driver
+
+#1 [web internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.05kB done
+#1 DONE 0.0s
+
+#2 [web internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.1s
+
+#3 [web internal] load .dockerignore
+#3 transferring context: 175B done
+#3 DONE 0.0s
+
+#4 [web internal] load build context
+#4 DONE 0.0s
+
+#5 [web 1/8] FROM docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+#5 resolve docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016 0.1s done
+#5 DONE 0.2s
+
+#4 [web internal] load build context
+#4 transferring context: 5.70kB 0.0s done
+#4 DONE 0.0s
+
+#6 [web 6/8] COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+#6 CACHED
+
+#7 [web 7/8] COPY src/ /app/
+#7 CACHED
+
+#8 [web 2/8] WORKDIR /app
+#8 CACHED
+
+#9 [web 3/8] RUN groupadd --gid "1000" app     && useradd --uid "1000" --gid app --create-home --shell /usr/sbin/nologin app
+#9 CACHED
+
+#10 [web 4/8] COPY requirements.txt /tmp/requirements.txt
+#10 CACHED
+
+#11 [web 5/8] RUN pip install -r /tmp/requirements.txt
+#11 CACHED
+
+#12 [web 8/8] RUN chmod 0755 /usr/local/bin/entrypoint.sh     && mkdir -p /app/staticfiles     && chown app:app /app/staticfiles
+#12 CACHED
+
+#13 [web] exporting to image
+#13 exporting layers 0.1s done
+#13 exporting manifest sha256:c9c7a55aa99f1e4dc81d2bf893c829089f25304f5a6115ef0bf038a4a53d753f done
+#13 exporting config sha256:1f9611d14628570796cb99e62d2e5a2d5c59955126560d925546f6e8b20176e6 0.0s done
+#13 exporting attestation manifest sha256:41f1cbb6a20be24681d2ad0c585835d4da797089eec1943fb217c59627f0d87e
+#13 exporting attestation manifest sha256:41f1cbb6a20be24681d2ad0c585835d4da797089eec1943fb217c59627f0d87e 0.1s done
+#13 exporting manifest list sha256:d787475bdcd37e820ebe7c6c59052a554ea7b6fa50e3fcf6fad3c2f8707fcef3
+#13 exporting manifest list sha256:d787475bdcd37e820ebe7c6c59052a554ea7b6fa50e3fcf6fad3c2f8707fcef3 0.1s done
+#13 naming to docker.io/library/catalogo-servicios-web:latest 0.0s done
+#13 unpacking to docker.io/library/catalogo-servicios-web:latest 0.1s done
+#13 DONE 0.7s
+
+#14 [web] resolving provenance for metadata file
+#14 DONE 0.1s
+ web  Built
+ Container catalogo-servicios-db-1  Running
+ Container catalogo-servicios-web-1  Recreate
+ Container catalogo-servicios-web-1  Recreated
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Starting
+ Container catalogo-servicios-web-1  Started
+ Container catalogo-servicios-web-1  Waiting
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Healthy
+PASA: construir y levantar servicios (healthy)
+
+---- logs de web sin errores ----
+Revisando logs de web desde 2026-10-03T14:52:15.898769064Z
+Sin líneas [ERROR], Traceback ni CRITICAL.
+PASA: logs de web sin errores
+
+---- ruff check ----
+All checks passed!
+PASA: ruff check
+
+---- ruff format --check ----
+72 files already formatted
+PASA: ruff format --check
+
+---- migraciones al día (makemigrations --check --dry-run) ----
+No changes detected
+PASA: migraciones al día (makemigrations --check --dry-run)
+
+---- SHA-256 del Excel sin cambios ----
+data/CatalogoServicios.xlsx: La suma coincide
+PASA: SHA-256 del Excel sin cambios
+
+---- pytest ----
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0
+django: version: 5.2.17, settings: config.settings (from env)
+rootdir: /app
+configfile: pytest.ini
+testpaths: tests
+plugins: django-4.14.0
+collected 133 items
+
+tests/test_cargar_demo.py ....                                           [  3%]
+tests/test_crear_cuentas_demo.py ..........                              [ 10%]
+tests/test_d1_catalogo.py ......                                         [ 15%]
+tests/test_d1_organizacion.py ......                                     [ 19%]
+tests/test_ficha_catalogo.py .........                                   [ 26%]
+tests/test_humo.py ...                                                   [ 28%]
+tests/test_importacion_pantalla.py ...                                   [ 30%]
+tests/test_p01_login.py ........                                         [ 36%]
+tests/test_p02_sesion.py ........                                        [ 42%]
+tests/test_p03_catalogo.py ....                                          [ 45%]
+tests/test_p03_organizacion.py .....                                     [ 49%]
+tests/test_p03_roles.py ......                                           [ 54%]
+tests/test_p04_jerarquia.py ..                                           [ 55%]
+tests/test_p05_catalogo.py ........                                      [ 61%]
+tests/test_p05_organizacion.py ......                                    [ 66%]
+tests/test_p06_importacion.py .......                                    [ 71%]
+tests/test_p07_reimportacion.py ....                                     [ 74%]
+tests/test_p08_se12_ausencias.py ....                                    [ 77%]
+tests/test_p09_minimo_maximo.py .......                                  [ 82%]
+tests/test_p10_busqueda.py ......                                        [ 87%]
+tests/test_p11_responsable.py ........                                   [ 93%]
+tests/test_usuarios_admin.py .......                                     [ 98%]
+tests/test_migracion_puesto.py ..                                        [100%]
+
+======================= 133 passed in 172.56s (0:02:52) ========================
+PASA: pytest
+
+== RESULTADO: PASA (todos los pasos) ==

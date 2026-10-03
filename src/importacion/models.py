@@ -1,7 +1,8 @@
 """Trazabilidad de la importación del Excel (modelo-datos.md §3.2 y §3.4).
 
-Estos modelos solo los escribe el importador (fase siguiente); la aplicación los muestra en las
-fichas de servicio. El mapeo de correcciones se carga con una migración de datos versionada.
+Estos modelos solo los escribe el importador (`importacion.importador`); la aplicación los muestra
+en las fichas de servicio y en el historial de ejecuciones. El mapeo de correcciones se carga con
+una migración de datos versionada.
 """
 
 from django.contrib.postgres.fields import ArrayField
@@ -114,6 +115,8 @@ class AccionOrigen(models.TextChoices):
     CREADO = "CREADO", "Creado"
     ACTUALIZADO = "ACTUALIZADO", "Actualizado"
     SIN_CAMBIOS = "SIN_CAMBIOS", "Sin cambios"
+    # El Excel apunta a una referencia inactiva: no se aplicó ningún cambio al servicio.
+    OBSERVADO = "OBSERVADO", "Observado (sin cambios aplicados)"
 
 
 class OrigenServicio(models.Model):
@@ -186,6 +189,11 @@ class TipoObservacion(models.TextChoices):
     ESPACIOS_EN_TEXTO = "ESPACIOS_EN_TEXTO", "Espacios en el texto"
     AUSENCIA_EN_CONTINUACION = "AUSENCIA_EN_CONTINUACION", "Ausencia en filas de continuación"
     CONTROL_CONTEO = "CONTROL_CONTEO", "Control de conteo"
+    # Agregado en el importador: valores distintos de un mismo servicio entre su fila principal y
+    # sus filas de continuación, o mínimo > máximo (enunciado §3.4.6).
+    CONFLICTO_ATRIBUTOS = "CONFLICTO_ATRIBUTOS", "Conflicto de atributos del servicio"
+    # El Excel apunta a un nivel 1 o a un valor de catálogo dado de baja por un administrador.
+    REFERENCIA_INACTIVA = "REFERENCIA_INACTIVA", "Referencia inactiva"
 
 
 class Severidad(models.TextChoices):
@@ -195,7 +203,22 @@ class Severidad(models.TextChoices):
 
 
 class Observacion(models.Model):
-    ejecucion = models.ForeignKey(Ejecucion, on_delete=models.PROTECT, related_name="observaciones")
+    """Incidencia detectada por el importador.
+
+    Una observación idéntica no se duplica entre ejecuciones: `huella` (SHA-256 de su contenido)
+    es única; `ejecucion` es la primera que la detectó y `ejecuciones`, todas las que la emitieron.
+    """
+
+    ejecucion = models.ForeignKey(
+        Ejecucion,
+        on_delete=models.PROTECT,
+        related_name="observaciones",
+        verbose_name="primera ejecución",
+    )
+    ejecuciones = models.ManyToManyField(
+        Ejecucion, related_name="observaciones_emitidas", blank=True, verbose_name="ejecuciones"
+    )
+    huella = models.CharField("huella", max_length=64, unique=True, null=True, blank=True)
     tipo = models.CharField("tipo", max_length=40, choices=TipoObservacion.choices)
     severidad = models.CharField(
         "severidad", max_length=12, choices=Severidad.choices, default=Severidad.ADVERTENCIA

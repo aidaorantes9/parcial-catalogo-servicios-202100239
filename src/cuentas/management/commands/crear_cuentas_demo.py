@@ -12,18 +12,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from cuentas.models import Rol, Usuario
-from organizacion.models import Area, Departamento, Empresa, Puesto, Seccion
-
-CODIGO_DEMO = "DEMO"
-
-# (modelo, campo padre, nombre). Todos llevan es_demo=True: son datos nuevos, no del Excel.
-JERARQUIA_DEMO = [
-    (Empresa, None, "Empresa de demostración"),
-    (Area, "empresa", "Área de demostración"),
-    (Departamento, "area", "Departamento de demostración"),
-    (Seccion, "departamento", "Sección de demostración"),
-    (Puesto, "seccion", "Puesto de demostración"),
-]
+from organizacion.demo import asegurar_jerarquia_demo
 
 CUENTAS = [
     (Rol.ADMIN, "DEMO_ADMIN", "Administrador Demo"),
@@ -77,17 +66,7 @@ class Command(BaseCommand):
         return datos
 
     def _jerarquia_demo(self):
-        padre = None
-        for modelo, campo_padre, nombre in JERARQUIA_DEMO:
-            filtro = {"codigo": CODIGO_DEMO}
-            if campo_padre:
-                filtro[campo_padre] = padre
-            registro = modelo.objects.filter(**filtro).first()
-            if registro is None:
-                registro = modelo(**filtro, nombre=nombre, es_demo=True)
-                self._guardar(registro)
-                self.stdout.write(f"Creado {modelo._meta.verbose_name}: {registro}")
-            padre = registro
+        padre = asegurar_jerarquia_demo(self._guardar, self.stdout.write)
         if not padre.activo:
             raise CommandError(
                 f"El puesto de demostración «{padre}» existe pero está inactivo; reactívelo "

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block titulo %}Importación #{{ ejecucion.pk }} · Catálogo de Servicios{% endblock %}
+{% block contenido %}
+<nav class="ruta"><a href="{% url 'importacion:ejecucion_lista' %}">Importaciones</a> / <strong>#{{ ejecucion.pk }}</strong></nav>
+<h1>Importación #{{ ejecucion.pk }}</h1>
+<div class="tarjeta">
+  <dl>
+    <dt>Estado</dt><dd><span class="etiqueta{% if ejecucion.estado == 'FALLIDA' %} inactivo{% endif %}">{{ ejecucion.get_estado_display }}</span></dd>
+    <dt>Iniciada</dt><dd>{{ ejecucion.iniciada_en|date:"Y-m-d H:i:s" }}</dd>
+    <dt>Finalizada</dt><dd>{{ ejecucion.finalizada_en|date:"Y-m-d H:i:s"|default:"—" }}</dd>
+    <dt>Archivo</dt><dd>{{ ejecucion.archivo_nombre }} · hoja «{{ ejecucion.hoja }}»</dd>
+    <dt>SHA-256</dt><dd><code>{{ ejecucion.archivo_sha256 }}</code></dd>
+    <dt>Archivo original</dt><dd>{% if ejecucion.detalle_conteos.archivo_original is False %}No: hash registrado sin verificar; controles {% if ejecucion.detalle_conteos.controles_exigidos %}exigidos{% else %}informativos{% endif %}{% elif ejecucion.detalle_conteos.archivo_original %}Sí: hash verificado; controles exigidos{% else %}—{% endif %}</dd>
+    <dt>Ejecutada por</dt><dd>{{ ejecucion.ejecutada_por|default:"Comando (sin usuario)" }}</dd>
+    <dt>Resumen</dt><dd>Creados {{ ejecucion.creados }} · Actualizados {{ ejecucion.actualizados }} · Sin cambios {{ ejecucion.sin_cambios }} · Omitidos {{ ejecucion.omitidos }} · Observados {{ ejecucion.observados }}</dd>
+    <dt>Controles</dt><dd>Nivel 1: {{ ejecucion.total_n1|default_if_none:"—" }} / 12{% if ejecucion.total_n1 == 12 %} PASA{% elif ejecucion.total_n1 is not None %} FALLA{% endif %} · Nivel 2: {{ ejecucion.total_n2|default_if_none:"—" }} / 46{% if ejecucion.total_n2 == 46 %} PASA{% elif ejecucion.total_n2 is not None %} FALLA{% endif %}</dd>
+    {% if ejecucion.mensaje_error %}<dt>Error</dt><dd>{{ ejecucion.mensaje_error }}</dd>{% endif %}
+  </dl>
+</div>
+
+{% if entidades %}
+<h2>Conteos por entidad</h2>
+<table>
+  <thead><tr><th>Entidad</th><th>Creados</th><th>Actualizados</th><th>Sin cambios</th><th>Observados (sin aplicar)</th></tr></thead>
+  <tbody>
+  {% for etiqueta, c in entidades %}
+    <tr><td>{{ etiqueta }}</td><td>{{ c.creados }}</td><td>{{ c.actualizados }}</td><td>{{ c.sin_cambios }}</td><td>{{ c.observados|default:0 }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% if filas %}
+<p class="ayuda">Filas 5–101: {{ filas.servicio }} servicios · {{ filas.continuacion }} de continuación · {{ filas.sin_codigo }} sin código · {{ filas.vacia }} vacías{% if filas.referencia_inactiva %} · {{ filas.referencia_inactiva }} servicios nuevos no creados (nivel 1 inactivo){% endif %}.</p>
+{% endif %}
+
+<h2>Observaciones emitidas ({{ observaciones|length }})</h2>
+{% if por_tipo %}
+<p class="ayuda">{% for tipo, n in por_tipo.items %}{{ tipo }}: {{ n }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+{% endif %}
+<div class="tabla-desplazable">
+<table>
+  <thead><tr><th>Tipo</th><th>Severidad</th><th>Código</th><th>Filas / celdas</th><th>Detalle</th><th>Regla aplicada</th><th>Detectada</th></tr></thead>
+  <tbody>
+  {% for o in observaciones %}
+    <tr>
+      <td>{{ o.get_tipo_display }}</td>
+      <td>{{ o.get_severidad_display }}</td>
+      <td>{% if o.servicio_nivel2 %}<a href="{{ o.servicio_nivel2.get_absolute_url }}">{{ o.codigo_afectado }}</a>{% elif o.servicio_nivel1 %}<a href="{{ o.servicio_nivel1.get_absolute_url }}">{{ o.codigo_afectado }}</a>{% else %}{{ o.codigo_afectado|default:"—" }}{% endif %}</td>
+      <td>{{ o.filas|join:", " }}{% if o.celdas %} · {{ o.celdas|join:", " }}{% endif %}</td>
+      <td>{{ o.detalle }}{% if o.valores_conflicto %}<br><code class="original">{{ o.valores_conflicto }}</code>{% endif %}</td>
+      <td>{{ o.regla_aplicada|default:"—" }}</td>
+      <td>{% if o.ejecucion_id == ejecucion.pk %}<span class="etiqueta">nueva</span>{% else %}en <a href="{% url 'importacion:ejecucion_detalle' o.ejecucion_id %}">#{{ o.ejecucion_id }}</a>{% endif %}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="7">Sin observaciones{% if ejecucion.estado == 'FALLIDA' %} (la ejecución se revirtió){% endif %}.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

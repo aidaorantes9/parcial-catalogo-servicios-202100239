@@ -32,7 +32,7 @@
 <div class="tarjeta">
   <dl>
     <dt>Sección responsable</dt>
-    <dd>{% if servicio.seccion_responsable %}{% for nivel, url in ruta_seccion %}<a href="{{ url }}">{{ nivel.codigo }}</a>{% if not forloop.last %} / {% endif %}{% endfor %} — {{ servicio.seccion_responsable.nombre }}{% if not servicio.seccion_responsable.activo %} <span class="etiqueta inactivo">inactiva</span>{% endif %}{% else %}Sin asignar{% endif %}</dd>
+    <dd>{% if servicio.seccion_responsable %}{% for nivel, url in ruta_seccion %}<a href="{{ url }}">{{ nivel.codigo }}</a>{% if not forloop.last %} / {% endif %}{% endfor %} — {{ servicio.seccion_responsable.nombre }}{% if servicio.seccion_responsable.es_demo %} <span class="etiqueta">dato de demostración</span>{% endif %}{% if not servicio.seccion_responsable.activo %} <span class="etiqueta inactivo">inactiva</span>{% endif %}{% else %}Sin asignar{% endif %}</dd>
     <dt>Usuario responsable</dt>
     <dd>{% if servicio.usuario_responsable %}{% if user.es_admin %}<a href="{% url 'cuentas:usuario_detalle' servicio.usuario_responsable.pk %}">{{ servicio.usuario_responsable.username }}</a>{% else %}{{ servicio.usuario_responsable.username }}{% endif %} — {{ servicio.usuario_responsable.nombre }}{% if not servicio.usuario_responsable.is_active %} <span class="etiqueta inactivo">inactivo</span>{% endif %}{% else %}Sin asignar{% endif %}</dd>
   </dl>

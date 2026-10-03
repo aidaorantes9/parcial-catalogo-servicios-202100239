@@ -283,12 +283,14 @@ class Nivel1ListaView(LecturaRequeridaMixin, CatalogoMixin, ListView):
 
 def trazabilidad(servicio, campo):
     """Origen vigente y observaciones de importación de un servicio (vacíos si se creó en la
-    aplicación). Solo se muestran las observaciones de la última ejecución que lo procesó, para no
-    repetir las de importaciones anteriores."""
+    aplicación). Solo se muestran las observaciones emitidas por la última ejecución que lo
+    procesó: las detectadas en ella y las idénticas de ejecuciones anteriores que volvió a emitir
+    (no se duplican, modelo-datos.md §3.4)."""
     origen = getattr(servicio, "origen", None)
     observaciones = Observacion.objects.filter(**{campo: servicio}).select_related("ejecucion")
     if origen is not None:
-        observaciones = observaciones.filter(ejecucion=origen.ultima_ejecucion)
+        ultima = origen.ultima_ejecucion
+        observaciones = observaciones.filter(Q(ejecucion=ultima) | Q(ejecuciones=ultima)).distinct()
     valores = []
     if origen is not None:
         valores = [

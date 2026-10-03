@@ -440,7 +440,7 @@ Una fila por cada ejecución del importador (también las repetidas: así P07 es
 | hoja | varchar(100) | NN | `'Servicios Externos'` | | |
 | estado | varchar(10) | NN | `'EN_CURSO'` | | `CHECK (estado IN ('EN_CURSO','EXITOSA','FALLIDA'))`. **Agregado por diseño:** distinguir una ejecución abortada |
 | creados | integer | NN | `0` | | `CHECK (creados >= 0)` — registros nuevos (N1 + N2 + valores de catálogo) |
-| actualizados | integer | NN | `0` | | `CHECK (actualizados >= 0)` — registros existentes con al menos un campo del Excel cambiado |
+| actualizados | integer | NN | `0` | | `CHECK (actualizados >= 0)` — registros existentes con al menos un campo del Excel cambiado (los que tienen una referencia inactiva no se actualizan: cuentan como `observados` en `detalle_conteos`) |
 | sin_cambios | integer | NN | `0` | | **Agregado por diseño:** en una repetición, creados = actualizados = 0 y todo cae aquí; sin esta columna el resumen no cuadra |
 | omitidos | integer | NN | `0` | | `CHECK (omitidos >= 0)` — filas de 5–101 que no generan registro (continuación, filas sin código) |
 | observados | integer | NN | `0` | | `CHECK (observados >= 0)` — número de observaciones emitidas |
@@ -451,9 +451,10 @@ Una fila por cada ejecución del importador (también las repetidas: así P07 es
 | mensaje_error | text | N | NULL | | Solo si `estado = 'FALLIDA'` |
 
 Implementación (prompt 08): los contadores son `PositiveIntegerField` (Django crea el `CHECK (col >= 0)`); restricciones
-`ck_ejecucion_finalizada_tras_inicio`, `ck_ejecucion_sha256`, `ck_ejecucion_estado`. Los modelos de trazabilidad
-existen pero todavía **no los escribe nadie**: el importador es la fase siguiente. La ficha de N1 y N2 ya muestra
-origen, valores originales y observaciones cuando existan.
+`ck_ejecucion_finalizada_tras_inicio`, `ck_ejecucion_sha256`, `ck_ejecucion_estado`. Desde el prompt 09 los escribe el
+importador (`importacion.importador`, comando `importar_catalogo`); cómo aplica cada regla está en
+`docs/contexto/mapeo-excel.md`. Una ejecución abortada (hash distinto, controles 12/46, registro no válido) se
+registra como `FALLIDA` fuera de la transacción revertida. ADMIN ve el historial en `/importacion/ejecuciones/`.
 
 #### `importacion_origenservicio`
 
@@ -495,9 +496,35 @@ equivalente a `num_nonnulls(...) = 1`), `ck_origen_filas` (`cardinality(filas) >
 | valores_conflicto | jsonb | N | NULL | | p. ej. `{"B99": "Suministrar Analitica", "B100": "Mantener Tableros de Control"}` |
 | regla_aplicada | text | N | NULL | | **Agregado por diseño:** regla documentada que resolvió el caso (enunciado §3.4.6) |
 
-Implementación: restricciones `ck_observacion_tipo`, `ck_observacion_severidad`, `ck_observacion_filas`. La ficha de
-un servicio muestra solo las observaciones de la `ultima_ejecucion` de su origen, para no repetir las de
-importaciones anteriores (si no tiene origen, todas las que lo referencien).
+Implementación: restricciones `ck_observacion_tipo`, `ck_observacion_severidad`, `ck_observacion_filas`.
+
+Concretado en el prompt 09 (migración `importacion.0003_observacion_deduplicada`), porque una observación idéntica no
+debe duplicarse entre ejecuciones (P07):
+
+| Columna / tabla | Tipo PG | Nota |
+|---|---|---|
+| huella | varchar(64), UK, N | SHA-256 de tipo, severidad, código, filas, celdas, detalle, valores y regla. Una observación con la misma huella no se inserta otra vez |
+| `ejecucion_id` | (existente) | Ahora significa **primera** ejecución que la detectó |
+| `importacion_observacion_ejecuciones` | tabla M2M | Todas las ejecuciones que la emitieron (`Ejecucion.observaciones_emitidas`) |
+| tipo `CONFLICTO_ATRIBUTOS` | valor nuevo del CHECK | Valores distintos entre la fila principal y las de continuación, o `minimo > maximo` (enunciado §3.4.6). No ocurre con el Excel actual |
+| tipo `REFERENCIA_INACTIVA` | valor nuevo del CHECK (migración `0004`) | El Excel apunta a un nivel 1 o a un valor de catálogo dado de baja. `valores_conflicto = {"columna", "fila", "valor", "campo"}` |
+| `ultima_accion = 'OBSERVADO'` (origen) | valor nuevo de `ck_origen_ultima_accion` (migración `0004`) | El servicio existente no se modificó por una referencia inactiva |
+
+Reglas de importación añadidas tras revisar los hallazgos del prompt 09 (detalle en `mapeo-excel.md` §1 y §4):
+
+- **Referencias inactivas.** Una baja hecha por un administrador no puede dejar inutilizable la reimportación: la
+  importación continúa; el servicio existente conserva sus valores (contado como `observados` en `detalle_conteos`,
+  no como actualizado); un servicio nuevo con nivel 1 inactivo no se crea (fila omitida); uno nuevo con un valor de
+  catálogo inactivo se crea con esa FK en NULL. Siempre con observación `REFERENCIA_INACTIVA`.
+- **Controles 12/46.** Cuentan los registros existentes en la base con los códigos del archivo, también los dados de
+  baja (columnas `total_n1`, `total_n2`); los códigos leídos del archivo quedan en `detalle_conteos.codigos_en_archivo`.
+- **Archivo original y otros archivos.** Solo el original (ruta por defecto) exige coincidencia de SHA-256 y los
+  controles; con otro archivo el hash se registra, se avisa y los controles son informativos salvo
+  `--exigir-controles` (`detalle_conteos.archivo_original`, `controles_exigidos`).
+
+La ficha de un servicio muestra las observaciones emitidas por la `ultima_ejecucion` de su origen (detectadas en ella
+o re-emitidas), sin repetir las de importaciones anteriores (si no tiene origen, todas las que lo referencien). Un
+registro queda en `PENDIENTE_REVISION` si alguna de sus observaciones tiene severidad `ADVERTENCIA` o `ERROR`.
 
 Observaciones previstas con el Excel actual (aplicando D2–D7):
 
