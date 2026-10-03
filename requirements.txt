@@ -1,0 +1,11 @@
+# Dependencias de ejecución
+Django==5.2.17
+psycopg[binary]==3.3.6
+gunicorn==26.2.0
+argon2-cffi==25.1.0
+openpyxl==3.1.5
+
+# Pruebas y calidad (se instalan en la misma imagen para ejecutarlas dentro del contenedor)
+pytest==9.1.1
+pytest-django==4.14.0
+ruff==0.16.10

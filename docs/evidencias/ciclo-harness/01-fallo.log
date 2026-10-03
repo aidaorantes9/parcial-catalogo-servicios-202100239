@@ -1,0 +1,93 @@
+== Verificación 2026-10-02 18:57:16 CST ==
+Commit: d10c972
+Log: docs/evidencias/verificacion-20261002-1857.log
+
+---- docker compose config ----
+PASA: docker compose config
+
+---- construir y levantar servicios (healthy) ----
+time="2026-10-02T18:57:17-06:00" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+#0 building with "default" instance using docker driver
+
+#1 [web internal] load build definition from Dockerfile
+#1 transferring dockerfile: 931B 0.0s done
+#1 DONE 0.0s
+
+#2 [web internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.1s
+
+#3 [web internal] load .dockerignore
+#3 transferring context: 175B 0.0s done
+#3 DONE 0.1s
+
+#4 [web 1/8] FROM docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+#4 ...
+
+#5 [web internal] load build context
+#5 DONE 0.0s
+
+#4 [web 1/8] FROM docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+#4 resolve docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+#4 resolve docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016 0.3s done
+#4 DONE 0.3s
+
+#5 [web internal] load build context
+#5 transferring context: 1.68kB 0.0s done
+#5 DONE 0.1s
+
+#6 [web 2/8] WORKDIR /app
+#6 CACHED
+
+#7 [web 3/8] RUN groupadd --gid "1000" app     && useradd --uid "1000" --gid app --no-create-home --shell /usr/sbin/nologin app
+#7 CACHED
+
+#8 [web 4/8] COPY requirements.txt /tmp/requirements.txt
+#8 CACHED
+
+#9 [web 5/8] RUN pip install -r /tmp/requirements.txt
+#9 CACHED
+
+#10 [web 6/8] COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+#10 CACHED
+
+#11 [web 7/8] COPY src/ /app/
+#11 CACHED
+
+#12 [web 8/8] RUN chmod 0755 /usr/local/bin/entrypoint.sh     && mkdir -p /app/staticfiles     && chown app:app /app/staticfiles
+#12 CACHED
+
+#13 [web] exporting to image
+#13 exporting layers 0.0s done
+#13 exporting manifest sha256:be5545a7525d099ec53e831dd90616c66c8071755370dd426f888fe523e3b56b done
+#13 exporting config sha256:5f1400ada1b157b17820febe8764ec650cf678c0278c371e2ccbb14e9f5f9bff
+#13 exporting config sha256:5f1400ada1b157b17820febe8764ec650cf678c0278c371e2ccbb14e9f5f9bff done
+#13 exporting attestation manifest sha256:5e60bb93b9756ecd705e1541a98d492a06282359daec3a98fb790c3783e02898
+#13 exporting attestation manifest sha256:5e60bb93b9756ecd705e1541a98d492a06282359daec3a98fb790c3783e02898 0.2s done
+#13 exporting manifest list sha256:0d2537f0f5a52b0c49f63036f6ebd6b436f4d9bdc165cb2b645f7ffc8ab4e425
+#13 exporting manifest list sha256:0d2537f0f5a52b0c49f63036f6ebd6b436f4d9bdc165cb2b645f7ffc8ab4e425 0.1s done
+#13 naming to docker.io/library/catalogo-servicios-web:latest 0.0s done
+#13 unpacking to docker.io/library/catalogo-servicios-web:latest 0.1s done
+#13 DONE 0.9s
+
+#14 [web] resolving provenance for metadata file
+#14 DONE 0.1s
+ web  Built
+ Container catalogo-servicios-db-1  Running
+ Container catalogo-servicios-web-1  Recreate
+ Container catalogo-servicios-web-1  Recreated
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Starting
+ Container catalogo-servicios-web-1  Started
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-web-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Healthy
+PASA: construir y levantar servicios (healthy)
+
+---- logs de web sin errores ----
+Revisando logs de web desde 2026-10-03T00:57:27.15206902Z
+Líneas con errores en los logs de web:
+web-1  | [2026-10-03 00:57:36 +0000] [1] [ERROR] Control server error: [Errno 13] Permission denied: '/home/app'
+FALLA: logs de web sin errores (código 1)
+Verificación detenida en el primer fallo. Log: docs/evidencias/verificacion-20261002-1857.log

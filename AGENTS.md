@@ -121,16 +121,18 @@ Todos desde la raíz del repositorio. Solo existen los marcados como **existe**.
 |---|---|---|
 | Analizar Excel | `docker run --rm -v "$PWD":/w -w /w python:3.12-slim sh -c "pip install -q openpyxl && python scripts/analizar_excel.py"` (sale 0 si 12/46 pasan) | **existe** |
 | Verificar integridad del Excel | `sha256sum -c data/CatalogoServicios.xlsx.sha256` | **existe** |
-| Levantar entorno | `docker compose up --build -d` | pendiente |
-| Migrar | — | pendiente |
+| Preparar variables (una vez) | `cp .env.example .env` (valores de demostración) | **existe** |
+| Levantar entorno | `docker compose up --build -d --wait` (espera a que `db` y `web` estén healthy) | **existe** |
+| Migrar | `docker compose exec web python manage.py migrate` (el entrypoint de `web` ya lo ejecuta al arrancar) | **existe** |
+| Crear migraciones | `docker compose run --rm --no-deps --entrypoint "" --user "$(id -u):$(id -g)" -v "$PWD/src:/app" web python manage.py makemigrations` | **existe** |
 | Importar Excel | — | pendiente |
 | Crear cuentas demo | — | pendiente |
 | Cargar datos demo (organización y ≥3 asignaciones) | — | pendiente |
-| Pruebas P01–P12 | — | pendiente |
-| Lint | — | pendiente |
-| Verificación completa | `scripts/verificar.sh` | pendiente |
+| Pruebas (todas o filtradas, p. ej. `-m p01`) | `bash scripts/pruebas.sh [args de pytest]` | **existe** (solo prueba de humo; P01–P12 pendientes) |
+| Lint | `docker compose exec web ruff check --no-cache .` y `docker compose exec web ruff format --check --no-cache .` | **existe** |
+| Verificación completa | `bash scripts/verificar.sh` (log en `docs/evidencias/verificacion-AAAAMMDD-HHMM.log`) | **existe** |
 | Prueba de persistencia (P12) | — | pendiente |
-| Reinicio destructivo de datos de prueba | — | pendiente (requiere confirmación del usuario) |
+| Reinicio destructivo de datos de prueba | `bash scripts/reiniciar_datos_prueba.sh` (pide escribir `BORRAR`; único uso permitido de `down -v`) | **existe** (requiere confirmación del usuario) |
 
 Al crear un comando, actualizar esta tabla en el mismo cambio.
 

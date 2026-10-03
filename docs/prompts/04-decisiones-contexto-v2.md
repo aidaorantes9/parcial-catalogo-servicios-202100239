@@ -4,7 +4,7 @@
 - **Modelo y versión:** Claude Opus 5.5 (cuenta Claude Pro)
 - **Fecha de uso:** 2026-10-02
 - **Fase:** Context engineering (actualización #1) / Modelo de datos
-- **Commit resultante:** (se completa después del commit)
+- **Commit resultante:** `d10c972`
 
 ## Objetivo
 Registrar las decisiones humanas sobre D1–D9 y actualizar `AGENTS.md` y `modelo-datos.md` (contexto v2), resolviendo las interpretaciones que el asistente señaló.
