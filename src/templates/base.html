@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Catálogo de Servicios{% endblock %}</title>
+  <style>
+    :root { --fondo:#f6f7f9; --texto:#1f2933; --suave:#616e7c; --borde:#d9dee4; --primario:#1d4ed8;
+            --peligro:#b42318; --ok:#067647; --tarjeta:#fff; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+           background:var(--fondo); color:var(--texto); }
+    header { background:#111827; color:#fff; }
+    header .barra { max-width:1100px; margin:0 auto; padding:.6rem 1rem; display:flex; gap:1rem;
+                    align-items:center; flex-wrap:wrap; }
+    header a { color:#e5e7eb; text-decoration:none; }
+    header a:hover { color:#fff; text-decoration:underline; }
+    header .marca { font-weight:600; color:#fff; margin-right:auto; }
+    header .quien { color:#9ca3af; font-size:.9rem; }
+    main { max-width:1100px; margin:1.5rem auto; padding:0 1rem; }
+    .tarjeta { background:var(--tarjeta); border:1px solid var(--borde); border-radius:8px; padding:1.25rem; }
+    h1 { font-size:1.4rem; margin:0 0 1rem; }
+    table { width:100%; border-collapse:collapse; background:var(--tarjeta); }
+    th, td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--borde); vertical-align:top; }
+    th { font-size:.85rem; color:var(--suave); font-weight:600; }
+    dl { display:grid; grid-template-columns:max-content 1fr; gap:.4rem 1.2rem; margin:0; }
+    dt { color:var(--suave); }  dd { margin:0; }
+    .boton, button { display:inline-block; font:inherit; padding:.4rem .9rem; border-radius:6px;
+                     border:1px solid var(--primario); background:var(--primario); color:#fff;
+                     cursor:pointer; text-decoration:none; }
+    .boton.secundario, button.secundario { background:#fff; color:var(--primario); }
+    button.peligro { background:var(--peligro); border-color:var(--peligro); }
+    header button { background:transparent; border-color:#4b5563; color:#e5e7eb; padding:.25rem .7rem; }
+    .acciones { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; margin:1rem 0; }
+    .acciones form { margin:0; }
+    .mensajes { list-style:none; padding:0; margin:0 0 1rem; }
+    .mensajes li { padding:.6rem .9rem; border-radius:6px; margin-bottom:.4rem; border:1px solid var(--borde); background:#fff; }
+    .mensajes .error { border-color:#fecdca; background:#fef3f2; color:var(--peligro); }
+    .mensajes .success { border-color:#abefc6; background:#ecfdf3; color:var(--ok); }
+    .etiqueta { font-size:.8rem; padding:.1rem .5rem; border-radius:999px; background:#eef2f6; }
+    .etiqueta.inactivo { background:#fef3f2; color:var(--peligro); }
+    form p { margin:0 0 .9rem; }  form label { display:block; font-weight:500; margin-bottom:.2rem; }
+    input[type=text], input[type=email], input[type=password], input[type=search], select {
+      font:inherit; padding:.4rem .5rem; border:1px solid var(--borde); border-radius:6px; width:100%; max-width:480px; }
+    .helptext, .ayuda { display:block; color:var(--suave); font-size:.85rem; }
+    .errorlist { color:var(--peligro); margin:.2rem 0; padding-left:1.1rem; }
+    .paginacion { display:flex; gap:1rem; align-items:center; margin-top:1rem; }
+    .login { max-width:380px; margin:3rem auto; }
+  </style>
+</head>
+<body>
+  {% if user.is_authenticated %}
+  <header>
+    <nav class="barra" aria-label="Menú principal">
+      <a class="marca" href="{% url 'inicio' %}">Catálogo de Servicios</a>
+      <a href="{% url 'inicio' %}">Inicio</a>
+      {% if user.es_admin %}<a href="{% url 'cuentas:usuario_lista' %}">Usuarios</a>{% endif %}
+      <a href="{% url 'cuentas:perfil' %}">Mi perfil</a>
+      <span class="quien">{{ user.nombre }} · {{ user.get_rol_display }}</span>
+      <form method="post" action="{% url 'cuentas:salir' %}">
+        {% csrf_token %}<button type="submit">Cerrar sesión</button>
+      </form>
+    </nav>
+  </header>
+  {% endif %}
+  <main>
+    {% if messages %}
+    <ul class="mensajes">
+      {% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+    {% block contenido %}{% endblock %}
+  </main>
+</body>
+</html>

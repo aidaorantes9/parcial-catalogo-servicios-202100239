@@ -230,6 +230,7 @@ Las cuatro tablas tienen la misma forma; solo cambia la columna padre.
 | codigo | varchar(20) | NN | — | UK `(<padre>_id, codigo)` | `btrim(codigo) <> ''`. Nombre de restricción: `uq_<tabla>_padre_codigo` |
 | nombre | varchar(200) | NN | — | | `btrim(nombre) <> ''` |
 | activo | boolean | NN | `true` | | estado (baja lógica) |
+| es_demo | boolean | NN | `false` | | **agregado por diseño (fase 5)**: marca la jerarquía `DEMO` creada por `crear_cuentas_demo`; también existe en `organizacion_empresa` |
 | creado_en / actualizado_en | timestamptz | NN | `now()` | | agregado por diseño |
 
 Validaciones en servidor (todas las tablas de organización):
@@ -252,7 +253,7 @@ Se basa en `AbstractBaseUser` (aporta `password` y `last_login`) y **no** en `Ab
 | password | varchar(128) | NN | — | | Hash `argon2$argon2id$…` con sal (formato de Django). Nunca se muestra al rol consulta |
 | rol | varchar(10) | NN | `'CONSULTA'` | | `CHECK (rol IN ('ADMIN','CONSULTA'))`. Default al de menor privilegio |
 | is_active | boolean | NN | `true` | | Baja lógica; el backend de autenticación rechaza `is_active = false` |
-| puesto_id | bigint | **NN** | — | FK → `organizacion_puesto(id)` | Sin huérfanos. Puesto activo: validado en servidor |
+| puesto_id | bigint | **NN** | — | FK → `organizacion_puesto(id)` | Sin huérfanos. Puesto activo: validado en servidor. Migraciones `cuentas.0002`/`0003`: usuarios previos van a un puesto `MIGRACION` inactivo (ver `seguridad.md` §8) |
 | last_login | timestamptz | N | NULL | | Aportado por Django |
 | creado_en / actualizado_en | timestamptz | NN | `now()` | | agregado por diseño |
 

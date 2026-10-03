@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_not_required
 from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -10,6 +11,7 @@ def inicio(request):
     return render(request, "inicio.html")
 
 
+@login_not_required
 @never_cache
 @require_GET
 def salud(request):

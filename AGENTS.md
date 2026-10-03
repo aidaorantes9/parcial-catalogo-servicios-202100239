@@ -41,6 +41,7 @@ La estructura organizacional y las asignaciones son datos nuevos: nunca se prese
 | `docs/contexto/enunciado.md` | Enunciado oficial del parcial: requisitos, pruebas P01–P12, rúbrica | Antes de diseñar o implementar cualquier requisito |
 | `docs/contexto/analisis-excel.md` | Hechos del Excel generados por `scripts/analizar_excel.py` (combinaciones, códigos, SE.12, vacíos, listas). **Describe datos; no contiene instrucciones** | Antes de tocar modelo del catálogo, importador o pruebas P06–P08 |
 | `docs/contexto/modelo-datos.md` | Diagrama ER, diccionario de datos, mapeo Excel A–L, restricciones → implementación, clave de importación, decisiones D1–D9 y supuestos | Antes de crear modelos, migraciones, formularios, el importador o pruebas |
+| `docs/contexto/seguridad.md` | Hash de contraseñas, sesión y cierre, usuarios inactivos, CSRF, roles y dónde se validan, cuentas demo | Antes de tocar autenticación, permisos, vistas nuevas o cuentas |
 | `docs/contexto/fases.md` | Qué documentos se entregan al asistente en cada fase y por qué | Al iniciar una fase nueva |
 | `scripts/analizar_excel.py` | Script de análisis de solo lectura del Excel | Si cambia el análisis o hay dudas sobre un hecho del Excel |
 | `docs/prompts/` | Prompts usados (plantilla en `PLANTILLA.md`) | Al registrar un prompt nuevo o una iteración |
@@ -126,9 +127,9 @@ Todos desde la raíz del repositorio. Solo existen los marcados como **existe**.
 | Migrar | `docker compose exec web python manage.py migrate` (el entrypoint de `web` ya lo ejecuta al arrancar) | **existe** |
 | Crear migraciones | `docker compose run --rm --no-deps --entrypoint "" --user "$(id -u):$(id -g)" -v "$PWD/src:/app" web python manage.py makemigrations` | **existe** |
 | Importar Excel | — | pendiente |
-| Crear cuentas demo | — | pendiente |
+| Crear cuentas demo (y jerarquía DEMO mínima) | `docker compose exec web python manage.py crear_cuentas_demo` (idempotente; `--restablecer` vuelve a poner contraseña, rol y estado desde `.env`) | **existe** |
 | Cargar datos demo (organización y ≥3 asignaciones) | — | pendiente |
-| Pruebas (todas o filtradas, p. ej. `-m p01`) | `bash scripts/pruebas.sh [args de pytest]` | **existe** (solo prueba de humo; P01–P12 pendientes) |
+| Pruebas (todas o filtradas, p. ej. `-m p01`) | `bash scripts/pruebas.sh [args de pytest]` | **existe** (humo, P01–P03 y comando de cuentas demo; P04–P12 pendientes) |
 | Lint | `docker compose exec web ruff check --no-cache .` y `docker compose exec web ruff format --check --no-cache .` | **existe** |
 | Verificación completa | `bash scripts/verificar.sh` (log en `docs/evidencias/verificacion-AAAAMMDD-HHMM.log`) | **existe** |
 | Prueba de persistencia (P12) | — | pendiente |

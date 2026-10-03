@@ -1,0 +1,13 @@
+{# Datos visibles de un usuario. Nunca incluye el hash de contraseña ni otros campos de seguridad. #}
+<dl>
+  <dt>Usuario</dt><dd>{{ usuario.username }}</dd>
+  <dt>Nombre</dt><dd>{{ usuario.nombre }}</dd>
+  <dt>Correo</dt><dd>{{ usuario.email }}</dd>
+  <dt>Rol</dt><dd>{{ usuario.get_rol_display }}</dd>
+  <dt>Estado</dt><dd>{% if usuario.is_active %}<span class="etiqueta">Activo</span>{% else %}<span class="etiqueta inactivo">Inactivo</span>{% endif %}</dd>
+  <dt>Puesto</dt><dd>{{ usuario.puesto }}{% if not usuario.puesto.activo %} <span class="etiqueta inactivo">puesto inactivo</span>{% endif %}</dd>
+  <dt>Sección</dt><dd>{{ usuario.puesto.seccion }}</dd>
+  <dt>Departamento</dt><dd>{{ usuario.puesto.seccion.departamento }}</dd>
+  <dt>Área</dt><dd>{{ usuario.puesto.seccion.departamento.area }}</dd>
+  <dt>Empresa</dt><dd>{{ usuario.empresa }} <span class="ayuda">derivada de la jerarquía del puesto</span></dd>
+</dl>

@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.functions import Lower
 
@@ -39,7 +40,8 @@ class UsuarioManager(BaseUserManager):
 class Usuario(AbstractBaseUser):
     """Usuario local. Se basa en AbstractBaseUser, sin is_staff ni is_superuser (S6).
 
-    La autorización depende solo de `rol`. El campo `puesto` se agrega en la fase de organización.
+    La autorización depende solo de `rol`. El puesto es obligatorio (supuesto S4) y la empresa se
+    deriva de la jerarquía del puesto; no se guarda una relación paralela que pueda contradecirla.
     """
 
     # unique=True lo exige Django para USERNAME_FIELD; la restricción sobre lower() evita duplicados
@@ -49,6 +51,12 @@ class Usuario(AbstractBaseUser):
     nombre = models.CharField("nombre", max_length=200)
     rol = models.CharField("rol", max_length=10, choices=Rol.choices, default=Rol.CONSULTA)
     is_active = models.BooleanField("activo", default=True)
+    puesto = models.ForeignKey(
+        "organizacion.Puesto",
+        on_delete=models.PROTECT,
+        related_name="usuarios",
+        verbose_name="puesto",
+    )
     creado_en = models.DateTimeField("creado en", auto_now_add=True)
     actualizado_en = models.DateTimeField("actualizado en", auto_now=True)
 
@@ -56,7 +64,7 @@ class Usuario(AbstractBaseUser):
 
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
-    REQUIRED_FIELDS = ["email", "nombre"]
+    REQUIRED_FIELDS = ["email", "nombre", "puesto"]
 
     class Meta:
         verbose_name = "usuario"
@@ -81,6 +89,29 @@ class Usuario(AbstractBaseUser):
     def __str__(self):
         return self.username
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instancia = super().from_db(db, field_names, values)
+        instancia._puesto_original_id = dict(zip(field_names, values, strict=True)).get("puesto_id")
+        return instancia
+
     @property
     def es_admin(self):
         return self.rol == Rol.ADMIN
+
+    @property
+    def empresa(self):
+        """Empresa derivada de Puesto → Sección → Departamento → Área → Empresa."""
+        return self.puesto.seccion.departamento.area.empresa
+
+    def clean(self):
+        super().clean()
+        if self.puesto_id is None:
+            return
+        cambia_puesto = self._state.adding or self.puesto_id != getattr(
+            self, "_puesto_original_id", None
+        )
+        if cambia_puesto and not self.puesto.activo:
+            raise ValidationError(
+                {"puesto": f"El puesto «{self.puesto}» está inactivo; elija un puesto activo."}
+            )

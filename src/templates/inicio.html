@@ -1,14 +1,12 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Catálogo de Servicios</title>
-</head>
-<body>
-  <main>
-    <h1>Catálogo de Servicios</h1>
-    <p>Sistema del catálogo de servicios de TI.</p>
-  </main>
-</body>
-</html>
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Catálogo de Servicios</h1>
+<div class="tarjeta">
+  <p>Bienvenido, {{ user.nombre }}. Su rol es <strong>{{ user.get_rol_display }}</strong>.</p>
+  {% if user.es_admin %}
+  <p>Como administrador puede dar mantenimiento a los <a href="{% url 'cuentas:usuario_lista' %}">usuarios</a>.</p>
+  {% else %}
+  <p>Su cuenta tiene acceso de solo lectura a los datos funcionales.</p>
+  {% endif %}
+</div>
+{% endblock %}

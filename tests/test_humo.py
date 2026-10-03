@@ -4,9 +4,10 @@ from django.db import connection
 
 @pytest.mark.humo
 @pytest.mark.django_db
-def test_inicio_responde(client):
-    respuesta = client.get("/")
+def test_inicio_redirige_al_login_y_login_responde(client):
+    respuesta = client.get("/", follow=True)
     assert respuesta.status_code == 200
+    assert respuesta.redirect_chain[0][0].startswith("/entrar/")
     assert "Catálogo de Servicios" in respuesta.content.decode()
 
 

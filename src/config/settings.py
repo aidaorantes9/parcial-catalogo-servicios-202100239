@@ -50,6 +50,10 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Borra la sesión de un usuario desactivado o eliminado en su siguiente petición.
+    "cuentas.middleware.CerrarSesionInvalidaMiddleware",
+    # Todo requiere sesión salvo las vistas marcadas con @login_not_required (login y /salud/).
+    "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -88,6 +92,10 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = "cuentas.Usuario"
+AUTHENTICATION_BACKENDS = ["cuentas.backends.UsuarioOCorreoBackend"]
+LOGIN_URL = "cuentas:entrar"
+LOGIN_REDIRECT_URL = "inicio"
+LOGOUT_REDIRECT_URL = "cuentas:entrar"
 
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
@@ -111,7 +119,15 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Sesiones en base de datos (django_session): el cierre de sesión borra la fila en el servidor.
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_AGE = 8 * 60 * 60
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# Activar (1) cuando se sirva por HTTPS; en el entorno local de evaluación se usa HTTP.
+SESSION_COOKIE_SECURE = _booleana("COOKIES_SEGURAS")
+CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = "DENY"
 
