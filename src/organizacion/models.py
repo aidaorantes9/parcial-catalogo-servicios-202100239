@@ -209,6 +209,14 @@ class Seccion(UnidadOrganizacional):
             _ck_no_vacio("nombre", "organizacion_seccion"),
         ]
 
+    def dependientes_activos(self):
+        # D1 extendido: además de los puestos activos, los servicios activos de los que es
+        # sección responsable.
+        if not self.pk:
+            return []
+        servicios = self.servicios_asignados.filter(activo=True).order_by("codigo")
+        return super().dependientes_activos() + list(servicios)
+
 
 class Puesto(UnidadOrganizacional):
     campo_padre = "seccion"
@@ -235,3 +243,24 @@ class Puesto(UnidadOrganizacional):
         if not self.pk:
             return []
         return list(self.usuarios.filter(is_active=True))
+
+    def clean(self):
+        super().clean()
+        self._validar_cambio_de_seccion()
+
+    def _validar_cambio_de_seccion(self):
+        """D9: mover el puesto a otra sección cambiaría la sección de sus usuarios; se rechaza si
+        alguno es usuario responsable de servicios (de cualquier estado)."""
+        original = self._original_de("seccion_id")
+        if self._state.adding or self.seccion_id is None or self.seccion_id == original:
+            return
+        responsables = [u for u in self.usuarios.all() if u.servicios_asignados.exists()]
+        if responsables:
+            lista = ", ".join(u.username for u in responsables)
+            raise ValidationError(
+                {
+                    "seccion": f"No se puede mover el puesto a otra sección: sus usuarios {lista} "
+                    "son responsables de servicios de la sección actual. Cambie primero el "
+                    "usuario responsable de esos servicios."
+                }
+            )

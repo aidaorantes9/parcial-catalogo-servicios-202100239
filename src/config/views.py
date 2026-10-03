@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET
 
+from catalogo.views import conteos_catalogo
 from cuentas.models import Usuario
 from organizacion.models import Area, Departamento, Empresa, Puesto, Seccion
 
@@ -23,7 +24,11 @@ def inicio(request):
     conteos.append(
         ("Usuarios", Usuario.objects.filter(is_active=True).count(), "cuentas:usuario_lista")
     )
-    return render(request, "inicio.html", {"conteos": conteos})
+    return render(
+        request,
+        "inicio.html",
+        {"conteos": conteos, "conteos_catalogo": conteos_catalogo()},
+    )
 
 
 @login_not_required

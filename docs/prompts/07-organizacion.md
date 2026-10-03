@@ -4,7 +4,7 @@
 - Modelo: Claude Opus 5.5 (cuenta Claude Pro)
 - Fecha de uso: 2026-10-02
 - Fase: Organización
-- Commit resultante: (se completa después del commit)
+- Commit resultante: `1da55ac`
 
 ## Objetivo
 Implementar el mantenimiento de Empresa, Área, Departamento, Sección y Puesto con baja lógica, validaciones en el servidor y la política D1 para registros con dependientes.

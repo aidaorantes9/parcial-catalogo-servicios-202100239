@@ -1,0 +1,14 @@
+{% if user.es_admin %}
+<div class="acciones">
+  <a class="boton" href="{% url urls.editar registro.pk %}">Editar</a>
+  {% if registro.activo %}
+  <form method="post" action="{% url urls.desactivar registro.pk %}">
+    {% csrf_token %}<button type="submit" class="peligro">Desactivar</button>
+  </form>
+  {% else %}
+  <form method="post" action="{% url urls.reactivar registro.pk %}">
+    {% csrf_token %}<button type="submit" class="secundario">Reactivar</button>
+  </form>
+  {% endif %}
+</div>
+{% endif %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }} · Catálogo de Servicios{% endblock %}
+{% block contenido %}
+<h1>{{ titulo }}{% if object %}: {{ object.codigo }}{% endif %}</h1>
+<div class="tarjeta">
+  {% if object.etiqueta_original %}<p class="ayuda">Etiqueta original: «{{ object.etiqueta_original }}»{% if object.importado %} (importada del Excel, fila {{ object.fila_origen }}; la etiqueta mostrada solo cambia con el mapeo de correcciones){% endif %}.</p>{% endif %}
+  {% if object.codigo_original %}<p class="ayuda">Código original en el Excel: «{{ object.codigo_original }}» (no editable).</p>{% endif %}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for campo in form %}
+    <p>{{ campo.label_tag }}{{ campo }}{% if campo.help_text %}<span class="helptext">{{ campo.help_text }}</span>{% endif %}{{ campo.errors }}</p>
+    {% endfor %}
+    <div class="acciones">
+      <button type="submit">Guardar</button>
+      <a href="{% if object %}{% url urls.detalle object.pk %}{% else %}{% url urls.lista %}{% endif %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

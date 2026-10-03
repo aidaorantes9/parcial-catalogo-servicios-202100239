@@ -1,4 +1,4 @@
-# Modelo de datos — v2 (fase 3, decisiones D1–D9 tomadas el 2026-10-02)
+# Modelo de datos — v2 (fase 3, decisiones D1–D9 tomadas el 2026-10-02; implementación del catálogo en prompt 08)
 
 > Documento de diseño previo a la implementación. Fuentes: `AGENTS.md` (§4, §5), `docs/contexto/enunciado.md`
 > (§2, §3.2, §3.3, §3.4, §6) y `docs/contexto/analisis-excel.md` (hechos del Excel, SHA-256
@@ -281,10 +281,26 @@ Los catálogos solo se alimentan de las listas `E112:H122` o del mantenimiento h
 importador **nunca** crea entradas a partir de las columnas F, G y H de los servicios.
 La lista de `ACTIVO` (`S`, `N`, columna E) **no** es tabla: son dos valores fijos que se controlan con CHECK.
 
+Implementación (prompt 08, `src/catalogo/`):
+
+- Ninguna migración precarga clases, criticidades ni tipos: la base queda vacía hasta que el importador lea
+  `E112:H122` o un administrador los cree. Los tres modelos comparten la clase abstracta `ValorCatalogo` y tienen
+  `creado_en`/`actualizado_en` (convención §2). `codigo` y `etiqueta_original` usan `unique=True`.
+- **Alta** (solo ADMIN): se escriben código, etiqueta y orden; la etiqueta se guarda en `etiqueta_original` **y** en
+  `etiqueta_mostrada`; `fila_origen` queda NULL. El código se valida en el formulario con el mismo patrón del CHECK
+  (`^[A-Z0-9_]+$`) y mensaje comprensible; también se rechaza una etiqueta que ya exista (original o mostrada).
+- **Edición**: el código y la etiqueta original no se editan nunca. En un valor **importado** (`fila_origen` no NULL)
+  solo se edita `orden`: su etiqueta mostrada solo cambia mediante `importacion_mapeocorreccion` (D7). En un valor
+  creado en la aplicación se editan `etiqueta_mostrada` (única dentro del catálogo, validado en el formulario) y `orden`.
+- Baja lógica con D1: no se desactiva un valor usado por servicios N2 activos (ver D1).
+
 #### Registro del mapeo de correcciones: `importacion_mapeocorreccion`
 
 Una sola tabla para todas las correcciones de textos y códigos procedentes del Excel. Las filas se cargan desde
-una migración de datos versionada (reproducible y revisable en Git), no a mano.
+una migración de datos versionada (reproducible y revisable en Git), no a mano:
+`importacion/migrations/0002_mapeo_correccion_inicial.py` (idempotente con `update_or_create`). Restricciones
+`uq_mapeocorreccion_ambito_valor`, `ck_mapeocorreccion_ambito`, `ck_mapeocorreccion_cambia_valor`. El modelo vive en la
+app `importacion` y tiene `creado_en`/`actualizado_en`. No hay pantalla para editarlo (supuesto S9).
 
 | Columna | Tipo PG | Nulo | Default | Clave | CHECK / nota |
 |---|---|---|---|---|---|
@@ -363,11 +379,31 @@ Restricciones de tabla:
 | `ck_n2_usuario_requiere_seccion` | `CHECK (usuario_responsable_id IS NULL OR seccion_responsable_id IS NOT NULL)` | No puede haber usuario responsable sin sección responsable |
 | `uq_n2_codigo` | `UNIQUE (codigo)` | Código único en su entidad |
 | `uq_n2_codigo_original` | `UNIQUE (codigo_original) WHERE codigo_original IS NOT NULL` | Idempotencia de la importación |
+| `ck_n2_activo_excel_no_vacio` | `CHECK (activo_excel IS NULL OR activo_excel <> '')` | Nombre concreto del CHECK de `activo_excel` descrito arriba |
+| `ck_catalogo_servicionivel2_{codigo,nombre}_no_vacio`, `ck_catalogo_servicionivel2_estado_revision` | Texto no vacío y lista cerrada de `estado_revision` | Convención §2 (lo mismo en `servicionivel1`) |
 
-Índices adicionales (búsqueda y filtros, P10): `nombre` y `codigo` con `gin_trgm_ops` (extensión `pg_trgm`,
-**agregado por diseño** para búsqueda parcial eficiente; opcional, con 46 registros basta `ILIKE`), y B-tree en
-`nivel1_id`, `clase_id`, `criticidad_id`, `tipo_id`, `activo`, `activo_excel` (Django crea los de FK
-automáticamente).
+Validaciones en servidor de N1 y N2 (prompt 08, `ServicioNivel2.clean()`, ejecutado por el formulario y por
+`catalogo.servicios.guardar_servicio_nivel2`):
+
+- Obligatorios: N1, código y nombre (solo espacios cuenta como vacío). Código único con mensaje que incluye el código.
+- Referencias (`nivel1`, `clase`, `criticidad`, `tipo`, `seccion_responsable`, `usuario_responsable`): un id inexistente
+  se rechaza con "no existe"; un registro inactivo con "está inactivo". La regla de "activo" se aplica **al crear, al
+  cambiar la referencia o al reactivar el servicio**; si la referencia no cambia se conserva aunque se haya
+  desactivado después (mismo criterio que en organización). Los selects solo ofrecen opciones activas más la actual.
+- `minimo <= maximo`: error en el campo `maximo` con ambos valores ("El mínimo (10) no puede ser mayor que el máximo
+  (5)."), además del CHECK.
+- Vacíos → NULL: `minimo`/`maximo` vacíos son NULL (un 0 escrito se guarda como 0); `descripcion` y `metrica` vacías o
+  de solo espacios son NULL y, si tienen texto, **no se recortan** (para no alterar valores importados como I5);
+  `activo_excel` ofrece S / N / Desconocido (NULL) y, si el valor guardado no es reconocido, también ese valor tal cual.
+- `codigo_original` no es editable; `codigo` sí (la clave de importación es `codigo_original`, §6).
+- `estado_revision` es editable por ADMIN en N1 y N2.
+- La ficha muestra NULL como "Sin dato" (ACTIVO como "Desconocido", responsables como "Sin asignar"), nunca como 0;
+  los decimales se muestran sin ceros de relleno (`1.0000` → `1`).
+
+Índices adicionales (búsqueda y filtros, P10): B-tree en `nivel1_id`, `clase_id`, `criticidad_id`, `tipo_id`,
+`seccion_responsable_id`, `usuario_responsable_id` (Django crea los de FK), `ix_n2_activo` y `ix_n2_activo_excel`.
+Los índices `gin_trgm_ops` (`pg_trgm`) **no se implementaron**: eran opcionales y con 46 registros basta `ILIKE`
+(`icontains`).
 
 Filtros del listado de servicios (→ **D8**, ajuste del usuario). `activo` y `activo_excel` se filtran **por
 separado**, cada uno con su propio control, para que un servicio como SE.05.01 (`ACTIVO = N`, registro activo) se
@@ -379,6 +415,14 @@ pueda localizar:
 | ACTIVO (Excel) | `activo_excel` | S / N / Desconocido / Otros / Todos (por defecto) | `= 'S'` / `= 'N'` / `IS NULL` / `IS NOT NULL AND activo_excel NOT IN ('S','N')` / sin condición |
 | Nivel 1, clase, criticidad, tipo | FK | Valores del catálogo + "Sin dato" (→ D6; incluye valores fuera de lista, identificables por su observación) | `= id` / `IS NULL` |
 | Estado de revisión | `estado_revision` | Los tres valores / Todos | `= valor` |
+| Sección responsable | `seccion_responsable_id` | Secciones + "Sin asignar" | `= id` / `IS NULL` |
+
+Implementación (prompt 08, `catalogo.views.Nivel2ListaView`, `/catalogo/servicios/`): parámetros GET `q` (código o
+nombre, `icontains`), `nivel1`, `estado` (`activos` por defecto / `inactivos` / `todos`), `activo_excel` (`S`, `N`,
+`desconocido`, `otros`, vacío = todos), `clase`, `criticidad`, `tipo`, `seccion` (id o `sin` = "Sin dato"/"Sin
+asignar") y `revision`. Todos se combinan con Y. Un valor no válido se ignora. Paginación de 20; los enlaces de
+página repiten todos los parámetros (`filtros` sin `page`). El filtro "Sin dato" de N1 no se ofrece porque `nivel1_id`
+es NOT NULL. Los listados de N1 y de valores de catálogo tienen búsqueda, filtro de estado (y de revisión en N1).
 
 ### 3.4 Trazabilidad (app `importacion`)
 
@@ -392,7 +436,7 @@ Una fila por cada ejecución del importador (también las repetidas: así P07 es
 | iniciada_en | timestamptz | NN | `now()` | | Fecha de la ejecución |
 | finalizada_en | timestamptz | N | NULL | | `CHECK (finalizada_en IS NULL OR finalizada_en >= iniciada_en)` |
 | archivo_nombre | varchar(255) | NN | — | | p. ej. `data/CatalogoServicios.xlsx` |
-| archivo_sha256 | char(64) | NN | — | | `CHECK (archivo_sha256 ~ '^[0-9a-f]{64}$')`. Permite comprobar que se importó el archivo original |
+| archivo_sha256 | varchar(64) | NN | — | | `CHECK (archivo_sha256 ~ '^[0-9a-f]{64}$')` (`ck_ejecucion_sha256`). Se implementó como `varchar(64)` (`CharField` de Django); el CHECK garantiza los 64 caracteres. Permite comprobar que se importó el archivo original |
 | hoja | varchar(100) | NN | `'Servicios Externos'` | | |
 | estado | varchar(10) | NN | `'EN_CURSO'` | | `CHECK (estado IN ('EN_CURSO','EXITOSA','FALLIDA'))`. **Agregado por diseño:** distinguir una ejecución abortada |
 | creados | integer | NN | `0` | | `CHECK (creados >= 0)` — registros nuevos (N1 + N2 + valores de catálogo) |
@@ -405,6 +449,11 @@ Una fila por cada ejecución del importador (también las repetidas: así P07 es
 | detalle_conteos | jsonb | NN | `'{}'` | | **Agregado por diseño:** desglose por entidad `{"nivel1": {"creados": …}, "nivel2": {…}, "clase": {…}}` |
 | ejecutada_por_id | bigint | N | NULL | FK → `cuentas_usuario(id)` | **Agregado por diseño:** NULL si se ejecutó por comando |
 | mensaje_error | text | N | NULL | | Solo si `estado = 'FALLIDA'` |
+
+Implementación (prompt 08): los contadores son `PositiveIntegerField` (Django crea el `CHECK (col >= 0)`); restricciones
+`ck_ejecucion_finalizada_tras_inicio`, `ck_ejecucion_sha256`, `ck_ejecucion_estado`. Los modelos de trazabilidad
+existen pero todavía **no los escribe nadie**: el importador es la fase siguiente. La ficha de N1 y N2 ya muestra
+origen, valores originales y observaciones cuando existan.
 
 #### `importacion_origenservicio`
 
@@ -425,6 +474,10 @@ Origen **vigente** de cada servicio importado (uno por servicio). El histórico 
 | ultima_ejecucion_id | bigint | NN | — | FK → `importacion_ejecucion(id)` | |
 | ultima_accion | varchar(12) | NN | — | | `CHECK (ultima_accion IN ('CREADO','ACTUALIZADO','SIN_CAMBIOS'))` |
 
+Implementación: `servicio_nivel1`/`servicio_nivel2` son `OneToOneField` (UNIQUE) con `related_name="origen"`;
+`filas` y `rangos_combinados` son `ArrayField`. Restricciones `ck_origen_un_servicio` (exactamente un servicio,
+equivalente a `num_nonnulls(...) = 1`), `ck_origen_filas` (`cardinality(filas) >= 1`), `ck_origen_ultima_accion`.
+
 #### `importacion_observacion`
 
 | Columna | Tipo PG | Nulo | Default | Clave | CHECK / nota |
@@ -441,6 +494,10 @@ Origen **vigente** de cada servicio importado (uno por servicio). El histórico 
 | detalle | text | NN | — | | Descripción legible |
 | valores_conflicto | jsonb | N | NULL | | p. ej. `{"B99": "Suministrar Analitica", "B100": "Mantener Tableros de Control"}` |
 | regla_aplicada | text | N | NULL | | **Agregado por diseño:** regla documentada que resolvió el caso (enunciado §3.4.6) |
+
+Implementación: restricciones `ck_observacion_tipo`, `ck_observacion_severidad`, `ck_observacion_filas`. La ficha de
+un servicio muestra solo las observaciones de la `ultima_ejecucion` de su origen, para no repetir las de
+importaciones anteriores (si no tiene origen, todas las que lo referencien).
 
 Observaciones previstas con el Excel actual (aplicando D2–D7):
 
@@ -576,9 +633,33 @@ A y B lo cumplen.
   `full_clean()` y guarda solo `activo`. `reactivar/` aplica la misma validación del modelo.
 - No hay cascada ni borrado físico: ninguna vista atiende DELETE (405). Una rama se desactiva de abajo hacia
   arriba.
-- Pendiente para fases siguientes: los servicios asignados a una sección o a un usuario, los N2 de un N1 y los
-  valores de catálogo en uso se sumarán a `dependientes_activos()` cuando existan esos modelos.
 - Pruebas: `tests/test_d1_organizacion.py` (marcador `p05`).
+
+**Implementación en el catálogo y responsables (prompt 08):**
+
+| Registro que se desactiva | Dependientes activos que lo impiden | Dónde |
+|---|---|---|
+| Sección | Puestos activos **y** servicios N2 activos de los que es sección responsable | `Seccion.dependientes_activos()` |
+| Servicio N1 | Servicios N2 activos | `ServicioNivel1.dependientes_activos()` |
+| Clase / criticidad / tipo | Servicios N2 activos que usan el valor | `ValorCatalogo.dependientes_activos()` |
+| Usuario | Servicios N2 activos de los que es usuario responsable | `Usuario._validar_desactivacion()` |
+| Servicio N2 | — (no tiene dependientes) | — |
+
+- Las acciones `catalogo/<entidad>/<id>/desactivar/` y `reactivar/` (solo POST, solo ADMIN, `CambiarEstadoView`)
+  siguen el mismo flujo que en organización: si hay dependientes no se guarda nada y el detalle muestra la lista con
+  enlaces. En Sección, el bloqueo enlaza a la ficha de cada servicio.
+- Los servicios **dados de baja** no bloquean y conservan su sección/usuario responsable (historial; no hay cascada).
+- Reactivar un N2 exige que su N1, sus valores de catálogo, su sección y su usuario responsable estén activos; si no,
+  se rechaza con el mensaje de `clean()`.
+- **Regla de desactivación de un usuario responsable (concretada en prompt 08):** se **rechaza** desactivar a un
+  usuario que es usuario responsable de algún servicio N2 **activo**; el mensaje lista los códigos y el detalle del
+  usuario muestra la tabla "Servicios a su cargo". Para desactivarlo, el administrador primero asigna otro
+  responsable (o deja el servicio solo con sección) o da de baja el servicio. Motivo: coherente con D1 (rechazar y
+  listar, nada en cascada ni en silencio) y con D9 (el responsable de un servicio activo debe ser un usuario activo de
+  la sección). Se descartaron quitar la asignación automáticamente (cambio silencioso) y permitirlo dejando un
+  responsable inactivo (asignación incoherente). La regla está en `Usuario.clean()`, así que aplica a cualquier
+  escritura con `full_clean()`, no solo a la vista.
+- Pruebas: `tests/test_d1_catalogo.py` (marcador `p05`).
 
 ### D2. Filas 42 y 67 (con E–H, sin código N2, fuera de combinación) — DECIDIDA: opción A
 
@@ -705,6 +786,21 @@ entra con `activo = true`.
 comando demo), más el CHECK `ck_n2_usuario_requiere_seccion`. Se rechaza cambiar el puesto de un usuario
 responsable a otro de una sección distinta mientras siga asignado, listando los servicios afectados.
 **Motivo:** mensajes claros y fácil de probar (P11) sin duplicar lógica en la base; coherente con D1.
+
+**Implementación (prompt 08):**
+
+- `catalogo/servicios.py`: `validar_responsables(seccion, usuario, …)` es el único punto de verdad de la regla
+  (usuario sin sección → error; usuario de otra sección → error que nombra ambas secciones; sección o usuario
+  inactivos → error cuando se asignan o cambian, o al reactivar el servicio). `ServicioNivel2.clean()` la llama.
+  `guardar_servicio_nivel2(servicio)` (`full_clean()` + `save()` en transacción) y `asignar_responsables(servicio,
+  seccion, usuario)` son las funciones que usan el formulario y que deberán usar el importador y el comando demo.
+- `Usuario.clean()`: cambiar el puesto a uno de **otra sección** se rechaza si el usuario es responsable de
+  cualquier servicio (activo o dado de baja, porque la regla debe cumplirse en toda fila), listando los códigos.
+  Cambiar a otro puesto de la misma sección sí se permite.
+- **Extensión concretada:** `Puesto.clean()` rechaza mover un puesto a otra sección si alguno de sus usuarios es
+  usuario responsable de servicios, porque eso cambiaría la sección de esos usuarios por la vía indirecta. Mover una
+  sección a otro departamento no afecta la regla.
+- CHECK `ck_n2_usuario_requiere_seccion` en la base. Pruebas: `tests/test_p11_responsable.py` (marcador `p11`).
 
 ---
 

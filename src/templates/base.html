@@ -52,6 +52,15 @@
     .bloqueo { border-color:#fecdca; background:#fef3f2; margin-bottom:1rem; }
     .conteos { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:.8rem; }
     .conteo .numero { display:block; font-size:1.6rem; font-weight:600; }
+    h3 { font-size:1rem; margin:1.2rem 0 .5rem; }
+    textarea, input[type=number] { font:inherit; padding:.4rem .5rem; border:1px solid var(--borde);
+                                   border-radius:6px; width:100%; max-width:480px; }
+    .rejilla-filtros { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:.6rem 1rem; }
+    .rejilla-filtros label { font-weight:500; font-size:.9rem; }
+    .rejilla-filtros input, .rejilla-filtros select { width:100%; margin-top:.2rem; }
+    .filtros-servicios { margin-bottom:1rem; }
+    .original { white-space:pre-wrap; }
+    .tabla-desplazable { overflow-x:auto; }
   </style>
 </head>
 <body>
@@ -60,6 +69,9 @@
     <nav class="barra" aria-label="Menú principal">
       <a class="marca" href="{% url 'inicio' %}">Catálogo de Servicios</a>
       <a href="{% url 'inicio' %}">Inicio</a>
+      <a href="{% url 'catalogo:servicionivel2_lista' %}">Servicios</a>
+      <a href="{% url 'catalogo:servicionivel1_lista' %}">Nivel 1</a>
+      <a href="{% url 'catalogo:indice' %}">Catálogos</a>
       <a href="{% url 'organizacion:empresa_lista' %}">Empresas</a>
       <a href="{% url 'organizacion:area_lista' %}">Áreas</a>
       <a href="{% url 'organizacion:departamento_lista' %}">Departamentos</a>

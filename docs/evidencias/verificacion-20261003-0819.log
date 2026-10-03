@@ -1,0 +1,140 @@
+== Verificación 2026-10-03 08:19:53 CST ==
+Commit: 1da55ac
+Log: docs/evidencias/verificacion-20261003-0819.log
+
+---- docker compose config ----
+PASA: docker compose config
+
+---- construir y levantar servicios (healthy) ----
+time="2026-10-03T08:19:54-06:00" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+#0 building with "default" instance using docker driver
+
+#1 [web internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.05kB 0.1s done
+#1 DONE 0.1s
+
+#2 [web internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.1s
+
+#3 [web internal] load .dockerignore
+#3 transferring context: 175B done
+#3 DONE 0.0s
+
+#4 [web internal] load build context
+#4 DONE 0.0s
+
+#5 [web 1/8] FROM docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+#5 resolve docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+#5 resolve docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016 0.2s done
+#5 DONE 0.2s
+
+#4 [web internal] load build context
+#4 transferring context: 4.65kB 0.0s done
+#4 DONE 0.1s
+
+#6 [web 4/8] COPY requirements.txt /tmp/requirements.txt
+#6 CACHED
+
+#7 [web 5/8] RUN pip install -r /tmp/requirements.txt
+#7 CACHED
+
+#8 [web 6/8] COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+#8 CACHED
+
+#9 [web 7/8] COPY src/ /app/
+#9 CACHED
+
+#10 [web 2/8] WORKDIR /app
+#10 CACHED
+
+#11 [web 3/8] RUN groupadd --gid "1000" app     && useradd --uid "1000" --gid app --create-home --shell /usr/sbin/nologin app
+#11 CACHED
+
+#12 [web 8/8] RUN chmod 0755 /usr/local/bin/entrypoint.sh     && mkdir -p /app/staticfiles     && chown app:app /app/staticfiles
+#12 CACHED
+
+#13 [web] exporting to image
+#13 exporting layers
+#13 exporting layers 0.2s done
+#13 exporting manifest sha256:58433b8dd53afc9b52822f4c5914c2b3ddd8425717c562f804f7ab892d5c42b1 0.0s done
+#13 exporting config sha256:cd77b735406cc753e5de8180b4ea3e8436476bbf5817b9c7a4f1be80f71f3648 0.0s done
+#13 exporting attestation manifest sha256:8a54cea91c3181923d593e20e3adfa900e9154935e174df4883e64f833a8c173
+#13 exporting attestation manifest sha256:8a54cea91c3181923d593e20e3adfa900e9154935e174df4883e64f833a8c173 0.2s done
+#13 exporting manifest list sha256:ef2887c91fe3f5515b5fee3f0e5698a262e34e28837dd3a68d151f55f63bb1c9
+#13 exporting manifest list sha256:ef2887c91fe3f5515b5fee3f0e5698a262e34e28837dd3a68d151f55f63bb1c9 0.1s done
+#13 naming to docker.io/library/catalogo-servicios-web:latest
+#13 naming to docker.io/library/catalogo-servicios-web:latest 0.0s done
+#13 unpacking to docker.io/library/catalogo-servicios-web:latest
+#13 unpacking to docker.io/library/catalogo-servicios-web:latest 0.2s done
+#13 DONE 1.2s
+
+#14 [web] resolving provenance for metadata file
+#14 DONE 0.1s
+ web  Built
+ Container catalogo-servicios-db-1  Running
+ Container catalogo-servicios-web-1  Recreate
+ Container catalogo-servicios-web-1  Recreated
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Starting
+ Container catalogo-servicios-web-1  Started
+ Container catalogo-servicios-web-1  Waiting
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Healthy
+PASA: construir y levantar servicios (healthy)
+
+---- logs de web sin errores ----
+Revisando logs de web desde 2026-10-03T14:20:03.116856368Z
+Sin líneas [ERROR], Traceback ni CRITICAL.
+PASA: logs de web sin errores
+
+---- ruff check ----
+All checks passed!
+PASA: ruff check
+
+---- ruff format --check ----
+56 files already formatted
+PASA: ruff format --check
+
+---- migraciones al día (makemigrations --check --dry-run) ----
+No changes detected
+PASA: migraciones al día (makemigrations --check --dry-run)
+
+---- SHA-256 del Excel sin cambios ----
+data/CatalogoServicios.xlsx: La suma coincide
+PASA: SHA-256 del Excel sin cambios
+
+---- pytest ----
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0
+django: version: 5.2.17, settings: config.settings (from env)
+rootdir: /app
+configfile: pytest.ini
+testpaths: tests
+plugins: django-4.14.0
+collected 111 items
+
+tests/test_crear_cuentas_demo.py ..........                              [  9%]
+tests/test_d1_catalogo.py ......                                         [ 14%]
+tests/test_d1_organizacion.py ......                                     [ 19%]
+tests/test_ficha_catalogo.py .........                                   [ 27%]
+tests/test_humo.py ...                                                   [ 30%]
+tests/test_p01_login.py ........                                         [ 37%]
+tests/test_p02_sesion.py ........                                        [ 45%]
+tests/test_p03_catalogo.py ....                                          [ 48%]
+tests/test_p03_organizacion.py .....                                     [ 53%]
+tests/test_p03_roles.py ......                                           [ 58%]
+tests/test_p04_jerarquia.py ..                                           [ 60%]
+tests/test_p05_catalogo.py ........                                      [ 67%]
+tests/test_p05_organizacion.py ......                                    [ 72%]
+tests/test_p09_minimo_maximo.py .......                                  [ 79%]
+tests/test_p10_busqueda.py ......                                        [ 84%]
+tests/test_p11_responsable.py ........                                   [ 91%]
+tests/test_usuarios_admin.py .......                                     [ 98%]
+tests/test_migracion_puesto.py ..                                        [100%]
+
+======================== 111 passed in 84.70s (0:01:24) ========================
+PASA: pytest
+
+== RESULTADO: PASA (todos los pasos) ==

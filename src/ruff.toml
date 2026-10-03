@@ -7,3 +7,9 @@ select = ["E", "F", "W", "I", "B", "UP", "DJ"]
 
 [lint.isort]
 known-first-party = ["config", "cuentas", "organizacion", "catalogo", "importacion"]
+
+[lint.per-file-ignores]
+# D6 (modelo-datos.md §7): un texto ausente es NULL, distinto de la cadena vacía; los CHECK de la
+# base impiden guardar '' en esos campos. DJ001 recomienda lo contrario, por eso se excluye aquí.
+"catalogo/models.py" = ["DJ001"]
+"importacion/models.py" = ["DJ001"]

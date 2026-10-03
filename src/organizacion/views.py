@@ -36,8 +36,17 @@ def url_de(modelo, accion):
 
 
 def enlaces(registros):
-    """Pares (registro, URL de su detalle)."""
-    return [(r, reverse(url_de(type(r), "detalle"), args=[r.pk])) for r in registros]
+    """Pares (registro, URL de su detalle). Los registros de otras apps (p. ej. servicios
+    asignados a una sección) usan su `get_absolute_url`."""
+    return [
+        (
+            r,
+            r.get_absolute_url()
+            if hasattr(r, "get_absolute_url")
+            else reverse(url_de(type(r), "detalle"), args=[r.pk]),
+        )
+        for r in registros
+    ]
 
 
 def enlaces_usuarios(usuarios):

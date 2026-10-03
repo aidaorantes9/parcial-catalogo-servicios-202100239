@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Servicios de nivel 1 · Catálogo de Servicios{% endblock %}
+{% block contenido %}
+<h1>Servicios de nivel 1</h1>
+<form method="get" role="search" class="acciones filtros">
+  <input type="search" name="q" value="{{ busqueda }}" placeholder="Buscar por código o nombre" aria-label="Buscar por código o nombre">
+  <select name="estado" aria-label="Estado del registro">
+    <option value="">Todos los estados</option>
+    <option value="activos"{% if estado == "activos" %} selected{% endif %}>Activos</option>
+    <option value="inactivos"{% if estado == "inactivos" %} selected{% endif %}>Dados de baja</option>
+  </select>
+  <select name="revision" aria-label="Estado de revisión">
+    <option value="">Cualquier revisión</option>
+    {% for valor, etiqueta in estados_revision %}<option value="{{ valor }}"{% if revision == valor %} selected{% endif %}>{{ etiqueta }}</option>{% endfor %}
+  </select>
+  <button type="submit" class="secundario">Filtrar</button>
+  {% if user.es_admin %}<a class="boton" href="{% url urls.crear %}">Nuevo</a>{% endif %}
+</form>
+<table>
+  <thead><tr><th>Código</th><th>Nombre</th><th>Servicios N2 (activos / total)</th><th>Revisión</th><th>Estado</th></tr></thead>
+  <tbody>
+  {% for registro in registros %}
+    <tr>
+      <td><a href="{% url urls.detalle registro.pk %}">{{ registro.codigo }}</a></td>
+      <td>{{ registro.nombre }}</td>
+      <td>{{ registro.activos_n2 }} / {{ registro.total_n2 }}</td>
+      <td>{{ registro.get_estado_revision_display }}</td>
+      <td>{% include "catalogo/_estado.html" %}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">No hay registros que coincidan con los criterios.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% include "catalogo/_paginacion.html" %}
+{% endblock %}

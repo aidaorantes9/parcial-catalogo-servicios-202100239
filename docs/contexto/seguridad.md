@@ -3,7 +3,7 @@
 Describe cómo está implementada la seguridad de la aplicación (fase 5). Fuentes: `AGENTS.md` §4.10–4.11 y §8,
 `docs/contexto/enunciado.md` §3.1, `docs/contexto/modelo-datos.md` (`cuentas_usuario`, supuestos S4–S6).
 Pruebas que lo comprueban: `tests/test_p01_login.py`, `tests/test_p02_sesion.py`, `tests/test_p03_roles.py`,
-`tests/test_usuarios_admin.py`, `tests/test_crear_cuentas_demo.py`.
+`tests/test_usuarios_admin.py`, `tests/test_crear_cuentas_demo.py`, `tests/test_p03_catalogo.py`.
 
 ## 1. Contraseñas: Argon2id
 
@@ -58,8 +58,8 @@ Pruebas que lo comprueban: `tests/test_p01_login.py`, `tests/test_p02_sesion.py`
 
 | Rol | Permisos |
 |---|---|
-| `ADMIN` | Lectura y escritura: mantenimiento de usuarios y de la estructura organizacional (y en fases siguientes catálogos) |
-| `CONSULTA` | Solo lectura de datos funcionales: inicio con conteos, su propio perfil y listados y detalles de Empresa, Área, Departamento, Sección y Puesto (`LecturaRequeridaMixin`). Recibe 403 en crear, editar, desactivar y reactivar. Nunca ve hashes ni campos de seguridad. Las pantallas de mantenimiento de usuarios son solo de ADMIN, también para GET (en el detalle de un puesto ve nombre de usuario, nombre, rol y estado, sin enlace) |
+| `ADMIN` | Lectura y escritura: mantenimiento de usuarios, de la estructura organizacional y del catálogo de servicios (clase, criticidad, tipo, nivel 1 y nivel 2, incluida la asignación de responsables) |
+| `CONSULTA` | Solo lectura de datos funcionales: inicio con conteos, su propio perfil y listados y detalles de Empresa, Área, Departamento, Sección y Puesto, y el catálogo (índice, listados con búsqueda y filtros, fichas de nivel 1 y nivel 2 y de los valores de clase, criticidad y tipo) (`LecturaRequeridaMixin`). Recibe 403 en crear, editar, desactivar y reactivar. Nunca ve hashes ni campos de seguridad. Las pantallas de mantenimiento de usuarios son solo de ADMIN, también para GET (en el detalle de un puesto y en la ficha de un servicio ve nombre de usuario y nombre del responsable, sin enlace) |
 
 La autorización se valida **en el servidor**, en tres capas:
 
@@ -70,10 +70,12 @@ La autorización se valida **en el servidor**, en tres capas:
 2. **Rol por vista**: `cuentas/permisos.py` define `AdminRequeridoMixin` / `LecturaRequeridaMixin` / `RolRequeridoMixin` (vistas de clase)
    y `admin_requerido` / `rol_requerido(...)` (vistas de función). Sin sesión → redirección al login; con sesión
    y otro rol → **403** (`PermissionDenied`, plantilla `403.html`). Toda vista de escritura los usa.
-3. **Modelo**: `Usuario.clean()` rechaza asignar un puesto inactivo; `rol` tiene `CHECK (rol IN ('ADMIN','CONSULTA'))`.
+3. **Modelo**: `Usuario.clean()` rechaza asignar un puesto inactivo, cambiar a otra sección a un usuario responsable de
+   servicios y desactivar a un responsable de servicios activos (D1/D9); `rol` tiene `CHECK (rol IN ('ADMIN','CONSULTA'))`.
 
 Ocultar el enlace "Usuarios" del menú a CONSULTA es solo comodidad: P03 envía POST directos (sin botón) a
-crear, editar, desactivar, reactivar y cambiar contraseña, y verifica 403 y que los datos no cambian.
+crear, editar, desactivar, reactivar y cambiar contraseña, y verifica 403 y que los datos no cambian. Lo mismo
+para las cinco entidades del catálogo (`tests/test_p03_catalogo.py`).
 
 No se usa el sitio `/admin/` de Django ni `is_staff`/`is_superuser` (supuesto S6): el único criterio es `rol`.
 

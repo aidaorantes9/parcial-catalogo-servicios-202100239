@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}{{ registro.codigo }} · {{ entidad_plural|capfirst }}{% endblock %}
+{% block contenido %}
+<nav class="ruta"><a href="{% url 'catalogo:indice' %}">Catálogo</a> / <a href="{% url urls.lista %}">{{ entidad_plural|capfirst }}</a></nav>
+<h1>{{ entidad|capfirst }} {{ registro.codigo }}</h1>
+{% include "catalogo/_bloqueo.html" %}
+<div class="tarjeta">
+  <dl>
+    <dt>Código</dt><dd>{{ registro.codigo }}</dd>
+    <dt>Etiqueta</dt><dd>{{ registro.etiqueta_mostrada }}</dd>
+    <dt>Etiqueta original</dt><dd>«{{ registro.etiqueta_original }}»{% if registro.corregido %} <span class="ayuda">corregida mediante el mapeo de correcciones</span>{% endif %}</dd>
+    <dt>Orden</dt><dd>{{ registro.orden }}</dd>
+    <dt>Origen</dt><dd>{% if registro.importado %}Lista de opciones del Excel, fila {{ registro.fila_origen }}{% else %}Creado en la aplicación{% endif %}</dd>
+    <dt>Estado</dt><dd>{% include "catalogo/_estado.html" %}</dd>
+  </dl>
+</div>
+{% include "catalogo/_acciones.html" %}
+<h2>Servicios de nivel 2 con este valor</h2>
+<table>
+  <thead><tr><th>Código</th><th>Nombre</th><th>Nivel 1</th><th>Estado</th></tr></thead>
+  <tbody>
+  {% for s in servicios %}
+    <tr>
+      <td><a href="{{ s.get_absolute_url }}">{{ s.codigo }}</a></td><td>{{ s.nombre }}</td><td>{{ s.nivel1.codigo }}</td>
+      <td>{% include "catalogo/_estado.html" with registro=s %}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="4">Ningún servicio usa este valor.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p><a href="{% url urls.lista %}">Volver al listado</a></p>
+{% endblock %}

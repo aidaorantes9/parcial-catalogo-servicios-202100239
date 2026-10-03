@@ -129,7 +129,7 @@ Todos desde la raíz del repositorio. Solo existen los marcados como **existe**.
 | Importar Excel | — | pendiente |
 | Crear cuentas demo (y jerarquía DEMO mínima) | `docker compose exec web python manage.py crear_cuentas_demo` (idempotente; `--restablecer` vuelve a poner contraseña, rol y estado desde `.env`) | **existe** |
 | Cargar datos demo (organización y ≥3 asignaciones) | — | pendiente |
-| Pruebas (todas o filtradas, p. ej. `-m p01`) | `bash scripts/pruebas.sh [args de pytest]` | **existe** (humo, P01–P03 y comando de cuentas demo; P04–P12 pendientes) |
+| Pruebas (todas o filtradas, p. ej. `-m p01`) | `bash scripts/pruebas.sh [args de pytest]` | **existe** (humo, P01–P05, P09–P11, comando de cuentas demo y marcador `catalogo` para ficha y trazabilidad; P06–P08 y P12 pendientes) |
 | Lint | `docker compose exec web ruff check --no-cache .` y `docker compose exec web ruff format --check --no-cache .` | **existe** |
 | Verificación completa | `bash scripts/verificar.sh` (log en `docs/evidencias/verificacion-AAAAMMDD-HHMM.log`) | **existe** |
 | Prueba de persistencia (P12) | — | pendiente |

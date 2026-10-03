@@ -1,0 +1,8 @@
+{% if dependientes_bloqueo %}
+<div class="tarjeta bloqueo" role="alert">
+  <p><strong>No se puede desactivar «{{ registro }}».</strong> Estos dependientes siguen activos:</p>
+  <ul>
+    {% for d, url in dependientes_bloqueo %}<li><a href="{{ url }}">{{ d }}</a></li>{% endfor %}
+  </ul>
+</div>
+{% endif %}

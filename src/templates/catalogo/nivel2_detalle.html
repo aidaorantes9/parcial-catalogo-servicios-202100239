@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load catalogo_extras %}
+{% block titulo %}{{ servicio.codigo }} · Servicios de nivel 2{% endblock %}
+{% block contenido %}
+<nav class="ruta"><a href="{% url 'catalogo:indice' %}">Catálogo</a> / <a href="{{ servicio.nivel1.get_absolute_url }}">{{ servicio.nivel1.codigo }}</a> / <strong>{{ servicio.codigo }}</strong></nav>
+<h1>Servicio {{ servicio.codigo }}</h1>
+{% with registro=servicio %}{% include "catalogo/_bloqueo.html" %}{% endwith %}
+<div class="tarjeta">
+  <dl>
+    <dt>Código</dt><dd>{{ servicio.codigo }}{% if servicio.codigo_original and servicio.codigo_original != servicio.codigo %} <span class="ayuda">original en el Excel: «{{ servicio.codigo_original }}»</span>{% endif %}</dd>
+    <dt>Nombre</dt><dd>{{ servicio.nombre }}</dd>
+    <dt>Servicio de nivel 1</dt><dd><a href="{{ servicio.nivel1.get_absolute_url }}">{{ servicio.nivel1 }}</a>{% if not servicio.nivel1.activo %} <span class="etiqueta inactivo">dado de baja</span>{% endif %}</dd>
+    <dt>ACTIVO (Excel)</dt>
+    <dd>{% if servicio.activo_excel is None %}Desconocido{% elif servicio.activo_excel_reconocido %}{{ servicio.activo_excel }}{% else %}<code class="original">«{{ servicio.activo_excel }}»</code> <span class="ayuda">valor original no reconocido</span>{% endif %}</dd>
+    <dt>Clase de servicio</dt>
+    <dd>{% if servicio.clase %}{{ servicio.clase }}{% elif originales_no_reconocidos.clase %}Sin valor reconocido — original en Excel: <code class="original">«{{ originales_no_reconocidos.clase }}»</code>{% else %}Sin dato{% endif %}</dd>
+    <dt>Criticidad</dt>
+    <dd>{% if servicio.criticidad %}{{ servicio.criticidad }}{% elif originales_no_reconocidos.criticidad %}Sin valor reconocido — original en Excel: <code class="original">«{{ originales_no_reconocidos.criticidad }}»</code>{% else %}Sin dato{% endif %}</dd>
+    <dt>Tipo de servicio</dt>
+    <dd>{% if servicio.tipo %}{{ servicio.tipo }}{% if servicio.tipo.corregido %} <span class="ayuda">original en la lista: «{{ servicio.tipo.etiqueta_original }}»</span>{% endif %}{% elif originales_no_reconocidos.tipo %}Sin valor reconocido — original en Excel: <code class="original">«{{ originales_no_reconocidos.tipo }}»</code>{% else %}Sin dato{% endif %}</dd>
+    <dt>Descripción</dt><dd>{% if servicio.descripcion is None %}Sin dato{% else %}<span class="original">{{ servicio.descripcion }}</span>{% endif %}</dd>
+    <dt>Métrica</dt><dd>{{ servicio.metrica|sin_dato }}</dd>
+    <dt>Mínimo</dt><dd>{{ servicio.minimo|numero }}</dd>
+    <dt>Máximo</dt><dd>{{ servicio.maximo|numero }}</dd>
+    <dt>Estado de revisión</dt><dd>{{ servicio.get_estado_revision_display }}</dd>
+    <dt>Estado del registro</dt><dd>{% include "catalogo/_estado.html" with registro=servicio %}</dd>
+  </dl>
+</div>
+{% with registro=servicio %}{% include "catalogo/_acciones.html" %}{% endwith %}
+
+<h2>Responsables <span class="ayuda">dato nuevo del sistema; no proviene del Excel</span></h2>
+<div class="tarjeta">
+  <dl>
+    <dt>Sección responsable</dt>
+    <dd>{% if servicio.seccion_responsable %}{% for nivel, url in ruta_seccion %}<a href="{{ url }}">{{ nivel.codigo }}</a>{% if not forloop.last %} / {% endif %}{% endfor %} — {{ servicio.seccion_responsable.nombre }}{% if not servicio.seccion_responsable.activo %} <span class="etiqueta inactivo">inactiva</span>{% endif %}{% else %}Sin asignar{% endif %}</dd>
+    <dt>Usuario responsable</dt>
+    <dd>{% if servicio.usuario_responsable %}{% if user.es_admin %}<a href="{% url 'cuentas:usuario_detalle' servicio.usuario_responsable.pk %}">{{ servicio.usuario_responsable.username }}</a>{% else %}{{ servicio.usuario_responsable.username }}{% endif %} — {{ servicio.usuario_responsable.nombre }}{% if not servicio.usuario_responsable.is_active %} <span class="etiqueta inactivo">inactivo</span>{% endif %}{% else %}Sin asignar{% endif %}</dd>
+  </dl>
+</div>
+
+{% include "catalogo/_trazabilidad.html" %}
+<p><a href="{% url urls.lista %}">Volver al listado</a></p>
+{% endblock %}

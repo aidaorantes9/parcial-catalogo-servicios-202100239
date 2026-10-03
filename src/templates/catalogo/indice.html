@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block titulo %}Catálogo · Catálogo de Servicios{% endblock %}
+{% block contenido %}
+<h1>Catálogo de servicios</h1>
+<div class="conteos">
+  {% for nombre, activos, total, url in conteos %}
+  <div class="tarjeta conteo">
+    <span class="numero">{{ activos }}</span>
+    <a href="{% url url %}">{{ nombre }}</a>
+    <span class="ayuda">activos de {{ total }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

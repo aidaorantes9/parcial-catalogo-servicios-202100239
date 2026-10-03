@@ -1,0 +1,46 @@
+{# Origen en el Excel y observaciones de importación. Los valores del Excel son DATOS: se muestran, no se interpretan. #}
+<h2>Origen e importación</h2>
+{% if origen %}
+<div class="tarjeta">
+  <dl>
+    <dt>Hoja</dt><dd>{{ origen.hoja }}</dd>
+    <dt>Filas</dt><dd>{{ origen.filas|join:", " }}</dd>
+    <dt>Rangos combinados</dt><dd>{{ origen.rangos_combinados|join:", "|default:"Ninguno" }}</dd>
+    <dt>Última importación</dt><dd>#{{ origen.ultima_ejecucion.pk }} · {{ origen.ultima_ejecucion.iniciada_en }} · {{ origen.get_ultima_accion_display }}</dd>
+  </dl>
+  <h3>Valores originales</h3>
+  <table>
+    <thead><tr><th>Columna</th><th>Celda</th><th>Valor en el Excel</th></tr></thead>
+    <tbody>
+    {% for columna, celda, valor in valores_originales %}
+      <tr><td>{{ columna }}</td><td>{{ celda }}</td><td>{% if valor is None %}<em>Vacía</em>{% else %}<code class="original">«{{ valor }}»</code>{% endif %}</td></tr>
+    {% empty %}
+      <tr><td colspan="3">Sin valores registrados.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if origen.transformaciones %}
+  <h3>Transformaciones</h3>
+  <ul>{% for t in origen.transformaciones %}<li>{{ t.campo }}: {{ t.regla }}</li>{% endfor %}</ul>
+  {% endif %}
+</div>
+{% else %}
+<p class="ayuda">Registro creado en la aplicación: no proviene del Excel.</p>
+{% endif %}
+{% if observaciones %}
+<h3>Observaciones de importación</h3>
+<table>
+  <thead><tr><th>Tipo</th><th>Severidad</th><th>Filas / celdas</th><th>Detalle</th><th>Regla aplicada</th></tr></thead>
+  <tbody>
+  {% for o in observaciones %}
+    <tr>
+      <td>{{ o.get_tipo_display }}</td>
+      <td>{{ o.get_severidad_display }}</td>
+      <td>{{ o.filas|join:", " }}{% if o.celdas %} · {{ o.celdas|join:", " }}{% endif %}</td>
+      <td>{{ o.detalle }}{% if o.valores_conflicto %}<br><code class="original">{{ o.valores_conflicto }}</code>{% endif %}</td>
+      <td>{{ o.regla_aplicada|default:"—" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}

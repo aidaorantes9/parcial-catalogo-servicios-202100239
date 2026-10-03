@@ -2,6 +2,20 @@
 {% block contenido %}
 <h1>Usuario {{ usuario.username }}</h1>
 <div class="tarjeta">{% include "cuentas/_datos_usuario.html" %}</div>
+<h2>Servicios a su cargo (usuario responsable)</h2>
+<table>
+  <thead><tr><th>Código</th><th>Nombre</th><th>Sección responsable</th><th>Estado</th></tr></thead>
+  <tbody>
+  {% for s in usuario.servicios_a_cargo %}
+    <tr>
+      <td><a href="{{ s.get_absolute_url }}">{{ s.codigo }}</a></td><td>{{ s.nombre }}</td><td>{{ s.seccion_responsable.codigo }}</td>
+      <td>{% if s.activo %}<span class="etiqueta">Activo</span>{% else %}<span class="etiqueta inactivo">Dado de baja</span>{% endif %}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="4">No es usuario responsable de ningún servicio.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
 <div class="acciones">
   <a class="boton" href="{% url 'cuentas:usuario_editar' usuario.pk %}">Editar</a>
   <a class="boton secundario" href="{% url 'cuentas:usuario_password' usuario.pk %}">Cambiar contraseña</a>

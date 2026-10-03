@@ -4,12 +4,22 @@
 <div class="tarjeta">
   <p>Bienvenido, {{ user.nombre }}. Su rol es <strong>{{ user.get_rol_display }}</strong>.</p>
   {% if user.es_admin %}
-  <p>Como administrador puede dar mantenimiento a la estructura organizacional y a los <a href="{% url 'cuentas:usuario_lista' %}">usuarios</a>.</p>
+  <p>Como administrador puede dar mantenimiento al catálogo de servicios, a la estructura organizacional y a los <a href="{% url 'cuentas:usuario_lista' %}">usuarios</a>.</p>
   {% else %}
   <p>Su cuenta tiene acceso de solo lectura a los datos funcionales.</p>
   {% endif %}
 </div>
-<h2>Registros activos</h2>
+<h2>Catálogo de servicios</h2>
+<div class="conteos">
+  {% for nombre, activos, total, url in conteos_catalogo %}
+  <div class="tarjeta conteo">
+    <span class="numero">{{ activos }}</span>
+    <a href="{% url url %}">{{ nombre }}</a>
+    <span class="ayuda">activos de {{ total }}</span>
+  </div>
+  {% endfor %}
+</div>
+<h2>Estructura organizacional: registros activos</h2>
 <div class="conteos">
   {% for nombre, total, url in conteos %}
   <div class="tarjeta conteo">
