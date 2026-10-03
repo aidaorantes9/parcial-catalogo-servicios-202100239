@@ -47,3 +47,9 @@ class AdminRequeridoMixin(RolRequeridoMixin):
     `admin_requerido`."""
 
     roles_permitidos = (Rol.ADMIN,)
+
+
+class LecturaRequeridaMixin(RolRequeridoMixin):
+    """Lectura de datos funcionales (organización y catálogo): ambos roles."""
+
+    roles_permitidos = (Rol.ADMIN, Rol.CONSULTA)

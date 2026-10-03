@@ -60,6 +60,33 @@ class UnidadOrganizacional(models.Model):
     def padre(self):
         return getattr(self, self.campo_padre) if self.campo_padre else None
 
+    @classmethod
+    def modelo_padre(cls):
+        return cls._meta.get_field(cls.campo_padre).related_model if cls.campo_padre else None
+
+    @classmethod
+    def con_jerarquia(cls):
+        """Consulta que trae en un solo JOIN todos los niveles superiores hasta la empresa."""
+        partes, modelo = [], cls
+        while modelo.campo_padre:
+            partes.append(modelo.campo_padre)
+            modelo = modelo.modelo_padre()
+        consulta = cls.objects.all()
+        return consulta.select_related("__".join(partes)) if partes else consulta
+
+    def ancestros(self):
+        """Niveles superiores, de la empresa al padre directo."""
+        cadena, nivel = [], self.padre
+        while nivel is not None:
+            cadena.insert(0, nivel)
+            nivel = nivel.padre
+        return cadena
+
+    @property
+    def ruta(self):
+        """Códigos de los niveles superiores y el registro: «EMP / AR / DP — Nombre»."""
+        return " / ".join([n.codigo for n in self.ancestros()] + [str(self)])
+
     def dependientes_activos(self):
         """Hijos activos que impiden la baja lógica (D1)."""
         if not self.pk or not self.relacion_hijos:
@@ -208,16 +235,3 @@ class Puesto(UnidadOrganizacional):
         if not self.pk:
             return []
         return list(self.usuarios.filter(is_active=True))
-
-    @property
-    def ruta(self):
-        """Empresa / Área / Departamento / Sección / Puesto, con los códigos de cada nivel."""
-        seccion = self.seccion
-        departamento = seccion.departamento
-        area = departamento.area
-        niveles = [area.empresa, area, departamento, seccion, self]
-        return " / ".join(n.codigo for n in niveles[:-1]) + f" / {self}"
-
-    @classmethod
-    def con_jerarquia(cls):
-        return cls.objects.select_related("seccion__departamento__area__empresa")

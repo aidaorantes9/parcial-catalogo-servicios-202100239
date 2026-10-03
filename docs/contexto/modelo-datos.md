@@ -565,6 +565,21 @@ A y B lo cumplen.
 **Decisión: A.** Se rechaza desactivar un registro con dependientes activos y se muestra la lista de dependientes.
 **Motivo:** evita registros huérfanos o asociados a padres inactivos sin borrar ni cambiar información en silencio.
 
+**Implementación en organización (prompt 07):**
+
+- `UnidadOrganizacional.dependientes_activos()` devuelve los hijos directos activos (en Puesto, los usuarios con
+  `is_active = true`); `clean()` rechaza la baja si la lista no está vacía y también rechaza reactivar bajo un
+  padre inactivo.
+- La acción `organizacion/<entidad>/<id>/desactivar/` (solo POST y solo ADMIN, `UnidadCambiarEstadoView`)
+  consulta los dependientes antes de cambiar nada; si hay, no guarda y vuelve a mostrar el detalle con un
+  mensaje de error y la lista de dependientes con enlace a cada uno. Sin dependientes activos aplica
+  `full_clean()` y guarda solo `activo`. `reactivar/` aplica la misma validación del modelo.
+- No hay cascada ni borrado físico: ninguna vista atiende DELETE (405). Una rama se desactiva de abajo hacia
+  arriba.
+- Pendiente para fases siguientes: los servicios asignados a una sección o a un usuario, los N2 de un N1 y los
+  valores de catálogo en uso se sumarán a `dependientes_activos()` cuando existan esos modelos.
+- Pruebas: `tests/test_d1_organizacion.py` (marcador `p05`).
+
 ### D2. Filas 42 y 67 (con E–H, sin código N2, fuera de combinación) — DECIDIDA: opción A
 
 | Opción | Ventajas | Desventajas |

@@ -46,6 +46,12 @@
     .errorlist { color:var(--peligro); margin:.2rem 0; padding-left:1.1rem; }
     .paginacion { display:flex; gap:1rem; align-items:center; margin-top:1rem; }
     .login { max-width:380px; margin:3rem auto; }
+    h2 { font-size:1.15rem; margin:1.5rem 0 .6rem; }
+    .filtros input[type=search], .filtros select { width:auto; min-width:12rem; }
+    .ruta { color:var(--suave); font-size:.9rem; margin-bottom:.4rem; }
+    .bloqueo { border-color:#fecdca; background:#fef3f2; margin-bottom:1rem; }
+    .conteos { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:.8rem; }
+    .conteo .numero { display:block; font-size:1.6rem; font-weight:600; }
   </style>
 </head>
 <body>
@@ -54,6 +60,11 @@
     <nav class="barra" aria-label="Menú principal">
       <a class="marca" href="{% url 'inicio' %}">Catálogo de Servicios</a>
       <a href="{% url 'inicio' %}">Inicio</a>
+      <a href="{% url 'organizacion:empresa_lista' %}">Empresas</a>
+      <a href="{% url 'organizacion:area_lista' %}">Áreas</a>
+      <a href="{% url 'organizacion:departamento_lista' %}">Departamentos</a>
+      <a href="{% url 'organizacion:seccion_lista' %}">Secciones</a>
+      <a href="{% url 'organizacion:puesto_lista' %}">Puestos</a>
       {% if user.es_admin %}<a href="{% url 'cuentas:usuario_lista' %}">Usuarios</a>{% endif %}
       <a href="{% url 'cuentas:perfil' %}">Mi perfil</a>
       <span class="quien">{{ user.nombre }} · {{ user.get_rol_display }}</span>

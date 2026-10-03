@@ -58,8 +58,8 @@ Pruebas que lo comprueban: `tests/test_p01_login.py`, `tests/test_p02_sesion.py`
 
 | Rol | Permisos |
 |---|---|
-| `ADMIN` | Lectura y escritura: mantenimiento de usuarios (y en fases siguientes organización y catálogos) |
-| `CONSULTA` | Solo lectura de datos funcionales (por ahora: inicio y su propio perfil). Nunca ve hashes ni campos de seguridad. Las pantallas de mantenimiento de usuarios son solo de ADMIN, también para GET |
+| `ADMIN` | Lectura y escritura: mantenimiento de usuarios y de la estructura organizacional (y en fases siguientes catálogos) |
+| `CONSULTA` | Solo lectura de datos funcionales: inicio con conteos, su propio perfil y listados y detalles de Empresa, Área, Departamento, Sección y Puesto (`LecturaRequeridaMixin`). Recibe 403 en crear, editar, desactivar y reactivar. Nunca ve hashes ni campos de seguridad. Las pantallas de mantenimiento de usuarios son solo de ADMIN, también para GET (en el detalle de un puesto ve nombre de usuario, nombre, rol y estado, sin enlace) |
 
 La autorización se valida **en el servidor**, en tres capas:
 
@@ -67,7 +67,7 @@ La autorización se valida **en el servidor**, en tres capas:
    exige sesión en todas las vistas. Excepciones explícitas con `@login_not_required`: el login (`LoginView`) y
    `/salud/`. Los archivos estáticos no pasan por las vistas de Django. Una vista nueva queda protegida por
    defecto, aunque se olvide agregar un decorador.
-2. **Rol por vista**: `cuentas/permisos.py` define `AdminRequeridoMixin` / `RolRequeridoMixin` (vistas de clase)
+2. **Rol por vista**: `cuentas/permisos.py` define `AdminRequeridoMixin` / `LecturaRequeridaMixin` / `RolRequeridoMixin` (vistas de clase)
    y `admin_requerido` / `rol_requerido(...)` (vistas de función). Sin sesión → redirección al login; con sesión
    y otro rol → **403** (`PermissionDenied`, plantilla `403.html`). Toda vista de escritura los usa.
 3. **Modelo**: `Usuario.clean()` rechaza asignar un puesto inactivo; `rol` tiene `CHECK (rol IN ('ADMIN','CONSULTA'))`.

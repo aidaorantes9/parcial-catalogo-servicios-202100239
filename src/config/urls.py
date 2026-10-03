@@ -6,4 +6,5 @@ urlpatterns = [
     path("", views.inicio, name="inicio"),
     path("salud/", views.salud, name="salud"),
     path("", include("cuentas.urls")),
+    path("organizacion/", include("organizacion.urls")),
 ]

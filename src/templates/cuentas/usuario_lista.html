@@ -8,7 +8,7 @@
   <a class="boton" href="{% url 'cuentas:usuario_crear' %}">Nuevo usuario</a>
 </div>
 <table>
-  <thead><tr><th>Usuario</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Puesto</th><th>Estado</th></tr></thead>
+  <thead><tr><th>Usuario</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Puesto</th><th>Empresa</th><th>Estado</th></tr></thead>
   <tbody>
   {% for u in usuarios %}
     <tr>
@@ -16,11 +16,12 @@
       <td>{{ u.nombre }}</td>
       <td>{{ u.email }}</td>
       <td>{{ u.get_rol_display }}</td>
-      <td>{{ u.puesto.nombre }}<span class="ayuda">{{ u.empresa.codigo }}</span></td>
+      <td>{{ u.puesto }}</td>
+      <td>{{ u.empresa }}<span class="ayuda">derivada del puesto</span></td>
       <td>{% if u.is_active %}<span class="etiqueta">Activo</span>{% else %}<span class="etiqueta inactivo">Inactivo</span>{% endif %}</td>
     </tr>
   {% empty %}
-    <tr><td colspan="6">No hay usuarios{% if busqueda %} que coincidan con «{{ busqueda }}»{% endif %}.</td></tr>
+    <tr><td colspan="7">No hay usuarios{% if busqueda %} que coincidan con «{{ busqueda }}»{% endif %}.</td></tr>
   {% endfor %}
   </tbody>
 </table>

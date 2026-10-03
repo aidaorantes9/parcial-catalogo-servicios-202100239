@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block titulo %}{{ entidad_plural|capfirst }} · Catálogo de Servicios{% endblock %}
+{% block contenido %}
+<h1>{{ entidad_plural|capfirst }}</h1>
+<form method="get" role="search" class="acciones filtros">
+  <input type="search" name="q" value="{{ busqueda }}" placeholder="Buscar por código o nombre" aria-label="Buscar por código o nombre">
+  <select name="estado" aria-label="Estado">
+    <option value="">Todos los estados</option>
+    <option value="activos"{% if estado == "activos" %} selected{% endif %}>Activos</option>
+    <option value="inactivos"{% if estado == "inactivos" %} selected{% endif %}>Inactivos</option>
+  </select>
+  {% if padres is not None %}
+  <select name="padre" aria-label="{{ padre_nombre|capfirst }}">
+    <option value="">Cualquier {{ padre_nombre }}</option>
+    {% for p in padres %}<option value="{{ p.pk }}"{% if padre_id == p.pk|stringformat:"d" %} selected{% endif %}>{{ p.ruta }}{% if not p.activo %} (inactivo){% endif %}</option>{% endfor %}
+  </select>
+  {% endif %}
+  <button type="submit" class="secundario">Filtrar</button>
+  {% if user.es_admin %}<a class="boton" href="{% url urls.crear %}">Nuevo</a>{% endif %}
+</form>
+<table>
+  <thead><tr><th>Código</th><th>Nombre</th>{% if padre_nombre %}<th>{{ padre_nombre|capfirst }}</th>{% endif %}<th>Estado</th></tr></thead>
+  <tbody>
+  {% for r in registros %}
+    <tr>
+      <td><a href="{% url urls.detalle r.pk %}">{{ r.codigo }}</a></td>
+      <td>{{ r.nombre }}</td>
+      {% if padre_nombre %}<td>{{ r.padre.ruta }}</td>{% endif %}
+      <td>{% if r.activo %}<span class="etiqueta">Activo</span>{% else %}<span class="etiqueta inactivo">Inactivo</span>{% endif %}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="4">No hay registros que coincidan con los criterios.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% if is_paginated %}
+<nav class="paginacion" aria-label="Paginación">
+  {% if page_obj.has_previous %}<a href="?{% if filtros %}{{ filtros }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">« Anterior</a>{% endif %}
+  <span>Página {{ page_obj.number }} de {{ paginator.num_pages }} ({{ paginator.count }} registros)</span>
+  {% if page_obj.has_next %}<a href="?{% if filtros %}{{ filtros }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Siguiente »</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

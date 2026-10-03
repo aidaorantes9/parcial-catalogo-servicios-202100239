@@ -1,0 +1,131 @@
+== Verificación 2026-10-02 19:43:39 CST ==
+Commit: aaae9a8
+Log: docs/evidencias/verificacion-20261002-1943.log
+
+---- docker compose config ----
+PASA: docker compose config
+
+---- construir y levantar servicios (healthy) ----
+time="2026-10-02T19:43:40-06:00" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+#0 building with "default" instance using docker driver
+
+#1 [web internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.05kB 0.0s done
+#1 DONE 0.0s
+
+#2 [web internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.1s
+
+#3 [web internal] load .dockerignore
+#3 transferring context: 175B done
+#3 DONE 0.0s
+
+#4 [web internal] load build context
+#4 DONE 0.0s
+
+#5 [web 1/8] FROM docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+#5 resolve docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016 0.1s done
+#5 DONE 0.1s
+
+#4 [web internal] load build context
+#4 transferring context: 16.25kB 0.0s done
+#4 DONE 0.1s
+
+#6 [web 4/8] COPY requirements.txt /tmp/requirements.txt
+#6 CACHED
+
+#7 [web 5/8] RUN pip install -r /tmp/requirements.txt
+#7 CACHED
+
+#8 [web 2/8] WORKDIR /app
+#8 CACHED
+
+#9 [web 3/8] RUN groupadd --gid "1000" app     && useradd --uid "1000" --gid app --create-home --shell /usr/sbin/nologin app
+#9 CACHED
+
+#10 [web 6/8] COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+#10 CACHED
+
+#11 [web 7/8] COPY src/ /app/
+#11 DONE 0.7s
+
+#12 [web 8/8] RUN chmod 0755 /usr/local/bin/entrypoint.sh     && mkdir -p /app/staticfiles     && chown app:app /app/staticfiles
+#12 DONE 1.2s
+
+#13 [web] exporting to image
+#13 exporting layers
+#13 exporting layers 0.8s done
+#13 exporting manifest sha256:4f4fdff90b77aced66d8c3febb168e3cc8c03cc99af36070ba9dad0f3c0454ea 0.1s done
+#13 exporting config sha256:3213caaa20126d53c077e1db1e7a690b503ac50e0c8cab0eeabc7c0b176371ba 0.1s done
+#13 exporting attestation manifest sha256:6684a1fe0f2624d5f68372aa0b528c3a2cd14aa4a17fcc13461a10855fdcb712
+#13 exporting attestation manifest sha256:6684a1fe0f2624d5f68372aa0b528c3a2cd14aa4a17fcc13461a10855fdcb712 0.2s done
+#13 exporting manifest list sha256:a3bab1f03778198008dbda7a2435c8dd72ece75d9a7b285d010966698f03d588
+#13 exporting manifest list sha256:a3bab1f03778198008dbda7a2435c8dd72ece75d9a7b285d010966698f03d588 0.1s done
+#13 naming to docker.io/library/catalogo-servicios-web:latest 0.0s done
+#13 unpacking to docker.io/library/catalogo-servicios-web:latest
+#13 unpacking to docker.io/library/catalogo-servicios-web:latest 0.7s done
+#13 DONE 2.3s
+
+#14 [web] resolving provenance for metadata file
+#14 DONE 0.1s
+ web  Built
+ Container catalogo-servicios-db-1  Running
+ Container catalogo-servicios-web-1  Recreate
+ Container catalogo-servicios-web-1  Recreated
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Starting
+ Container catalogo-servicios-web-1  Started
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-web-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Healthy
+PASA: construir y levantar servicios (healthy)
+
+---- logs de web sin errores ----
+Revisando logs de web desde 2026-10-03T01:43:52.282138723Z
+Sin líneas [ERROR], Traceback ni CRITICAL.
+PASA: logs de web sin errores
+
+---- ruff check ----
+All checks passed!
+PASA: ruff check
+
+---- ruff format --check ----
+43 files already formatted
+PASA: ruff format --check
+
+---- migraciones al día (makemigrations --check --dry-run) ----
+No changes detected
+PASA: migraciones al día (makemigrations --check --dry-run)
+
+---- SHA-256 del Excel sin cambios ----
+data/CatalogoServicios.xlsx: La suma coincide
+PASA: SHA-256 del Excel sin cambios
+
+---- pytest ----
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0
+django: version: 5.2.17, settings: config.settings (from env)
+rootdir: /app
+configfile: pytest.ini
+testpaths: tests
+plugins: django-4.14.0
+collected 63 items
+
+tests/test_crear_cuentas_demo.py ..........                              [ 15%]
+tests/test_d1_organizacion.py ......                                     [ 25%]
+tests/test_humo.py ...                                                   [ 30%]
+tests/test_p01_login.py ........                                         [ 42%]
+tests/test_p02_sesion.py ........                                        [ 55%]
+tests/test_p03_organizacion.py .....                                     [ 63%]
+tests/test_p03_roles.py ......                                           [ 73%]
+tests/test_p04_jerarquia.py ..                                           [ 76%]
+tests/test_p05_organizacion.py ......                                    [ 85%]
+tests/test_usuarios_admin.py .......                                     [ 96%]
+tests/test_migracion_puesto.py ..                                        [100%]
+
+============================= 63 passed in 47.62s ==============================
+PASA: pytest
+
+== RESULTADO: PASA (todos los pasos) ==
