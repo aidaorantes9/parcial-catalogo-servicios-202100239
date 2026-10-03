@@ -1,4 +1,4 @@
-# Prompt 01 — Análisis del Excel
+# Prompt 01: Análisis del Excel
 
 - **Herramienta:** Claude Code 2.1.287 (modo auto)
 - **Modelo y versión:** Claude Opus 5.5 (cuenta Claude Pro)

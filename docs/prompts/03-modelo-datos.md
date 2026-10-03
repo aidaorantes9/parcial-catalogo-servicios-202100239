@@ -1,4 +1,4 @@
-# Prompt 03 — Diseño del modelo de datos
+# Prompt 03: Diseño del modelo de datos
 
 - **Herramienta:** Claude Code 2.1.287 (modo auto)
 - **Modelo y versión:** Claude Opus 5.5 (cuenta Claude Pro)
@@ -34,4 +34,4 @@ Sí. Las 12 columnas están mapeadas, cada restricción tiene implementación in
 ## Problemas observados e iteración
 - **Problema observado:** al terminar, Claude Code sugirió automáticamente la respuesta "Acepto todas tus recomendaciones D1–D9". No se usó: las decisiones se revisaron una por una y se ajustaron D7 (registrar observación para "Análsis") y D8 (filtrar por ACTIVO del Excel y por baja lógica). Ver Prompt 04.
 - **Prompt revisado:** no fue necesario.
-- **Resultado comprobado:** —
+- **Resultado comprobado:**

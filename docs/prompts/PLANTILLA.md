@@ -1,4 +1,4 @@
-# Prompt NN — Título
+# Prompt NN: Título
 
 - **Herramienta:**
 - **Modelo y versión:**
@@ -18,7 +18,7 @@
 (solo lo relevante, no la conversación completa)
 
 ## ¿Cumplió el criterio de aceptación?
-Sí / No — explicación y cómo se comprobó (comando y resultado)
+Sí / No: explicación y cómo se comprobó (comando y resultado)
 
 ## Problemas observados e iteración
 - Problema observado:

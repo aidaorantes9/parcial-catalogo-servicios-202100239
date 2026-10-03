@@ -4,7 +4,7 @@
 - Modelo: Claude Opus 5.5 (cuenta Claude Pro)
 - Fecha de uso: 2026-10-02
 - Fase: Scaffold y Docker / Harness engineering
-- Commit resultante: (se completa después del commit)
+- Commit resultante: `7ddcb3f`
 
 ## Objetivo
 Crear el esqueleto del proyecto en Django, la configuración de Docker Compose y los scripts que permiten verificar el proyecto con un solo comando.

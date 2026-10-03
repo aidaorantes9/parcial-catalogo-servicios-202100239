@@ -1,4 +1,4 @@
-# Prompt 04 — Decisiones del modelo y actualización de contexto v2
+# Prompt 04: Decisiones del modelo y actualización de contexto v2
 
 - **Herramienta:** Claude Code 2.1.287 (modo auto)
 - **Modelo y versión:** Claude Opus 5.5 (cuenta Claude Pro)
@@ -15,18 +15,18 @@ Registrar las decisiones humanas sobre D1–D9 y actualizar `AGENTS.md` y `model
 ## Motivo de la actualización de contexto
 Los hallazgos del análisis del Excel (conflicto SE.12, SE.12.3 sin nivel 1, filas 42 y 67, valores ausentes, errores de escritura) requerían reglas explícitas antes de implementar. Hasta este punto estaban marcadas como PENDIENTE DE DECISIÓN.
 
-## Prompt utilizado (4a — decisiones D1–D9)
+## Prompt utilizado (4a: decisiones D1–D9)
 ```
 [PEGAR AQUÍ EL PROMPT DE DECISIONES DEL PASO 21]
 ```
 
-## Seguimiento 4b — interpretación de ACTIVO
+## Seguimiento 4b: interpretación de ACTIVO
 El asistente propuso guardar los valores desconocidos de ACTIVO como NULL. Se corrigió porque el enunciado pide "conservar los valores desconocidos como tales" y con NULL se perdería un valor original distinto de S/N.
 ```
 [PEGAR AQUÍ LA RESPUESTA DEL PASO 22]
 ```
 
-## Seguimiento 4c — valores fuera de lista en F, G y H
+## Seguimiento 4c: valores fuera de lista en F, G y H
 El asistente detectó que no había regla para este caso.
 ```
 [PEGAR AQUÍ LA REGLA F–H]

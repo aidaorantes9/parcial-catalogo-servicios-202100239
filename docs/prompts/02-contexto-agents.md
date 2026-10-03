@@ -1,4 +1,4 @@
-# Prompt 02 — Contexto del proyecto (AGENTS.md v1)
+# Prompt 02: Contexto del proyecto (AGENTS.md v1)
 
 - **Herramienta:** Claude Code 2.1.287 (modo auto)
 - **Modelo y versión:** Claude Opus 5.5 (cuenta Claude Pro)
