@@ -93,7 +93,7 @@ def test_p08_activo_excel_conserva_el_texto_original(importar):
 def test_p08_valores_fuera_de_lista_y_activo_no_reconocido(
     importar, excel_modificado, cliente_admin
 ):
-    """Valor fuera de lista en F, G y H y ACTIVO distinto de S/N (Excel generado en la prueba):
+    """P08: valor fuera de lista en F, G y H y ACTIVO distinto de S/N (Excel generado en la prueba):
     VALOR_NO_RECONOCIDO con columna, fila y valor; FK en NULL; ningún valor nuevo en los catálogos;
     original conservado en el origen y visible en la ficha; ACTIVO guardado tal cual."""
     ruta = excel_modificado({"F8": "BAJO DEMANDA", "G9": "Media", "H10": "Backend", "E11": "Si"})

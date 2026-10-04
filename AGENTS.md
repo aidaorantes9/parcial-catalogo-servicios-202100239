@@ -43,6 +43,7 @@ La estructura organizacional y las asignaciones son datos nuevos: nunca se prese
 | `docs/contexto/modelo-datos.md` | Diagrama ER, diccionario de datos, mapeo Excel A–L, restricciones → implementación, clave de importación, decisiones D1–D9 y supuestos | Antes de crear modelos, migraciones, formularios, el importador o pruebas |
 | `docs/contexto/mapeo-excel.md` | Cómo aplica el importador las reglas: columna → campo, combinaciones, filas de continuación, conflictos, ausencias, etiquetas, claves naturales, estado de revisión y ejemplo real del resumen | Antes de tocar el importador, `cargar_demo` o las pruebas P06–P08 |
 | `docs/contexto/seguridad.md` | Hash de contraseñas, sesión y cierre, usuarios inactivos, CSRF, roles y dónde se validan, cuentas demo | Antes de tocar autenticación, permisos, vistas nuevas o cuentas |
+| `docs/contexto/matriz-pruebas.md` | Matriz P01–P12: escenario, resultado esperado, tipo (unitaria, integración, extremo a extremo), pruebas, comando de cada uno, aislamiento de datos y casos extra | Antes de agregar o cambiar pruebas, marcadores o scripts de verificación |
 | `docs/contexto/fases.md` | Qué documentos se entregan al asistente en cada fase y por qué | Al iniciar una fase nueva |
 | `scripts/analizar_excel.py` | Script de análisis de solo lectura del Excel | Si cambia el análisis o hay dudas sobre un hecho del Excel |
 | `docs/prompts/` | Prompts usados (plantilla en `PLANTILLA.md`) | Al registrar un prompt nuevo o una iteración |
@@ -149,10 +150,10 @@ Todos desde la raíz del repositorio. Solo existen los marcados como **existe**.
 | Importar Excel | `bash scripts/importar.sh [opciones]` (comprueba el hash del original en el anfitrión y pasa las opciones a `python manage.py importar_catalogo [--archivo RUTA] [--sha256 RUTA_SUMA] [--exigir-controles] [--dry-run]` en `web`; guarda el log en `docs/evidencias/importacion-AAAAMMDD-HHMM.log`; con el original sale ≠ 0 si el hash no coincide o los controles 12/46 fallan; con otro `--archivo` registra su hash, avisa y los controles son informativos salvo `--exigir-controles`) | **existe** |
 | Crear cuentas demo (y jerarquía DEMO mínima) | `docker compose exec web python manage.py crear_cuentas_demo` (idempotente; `--restablecer` vuelve a poner contraseña, rol y estado desde `.env`) | **existe** |
 | Cargar datos demo (organización y ≥3 asignaciones) | `docker compose exec web python manage.py cargar_demo` (requiere el catálogo importado; idempotente; `DEMO_RESPONSABLE_PASSWORD` opcional) | **existe** |
-| Pruebas (todas o filtradas, p. ej. `-m p01`) | `bash scripts/pruebas.sh [args de pytest]` | **existe** (humo, P01–P11, comando de cuentas demo y marcadores `catalogo`, `importacion` y `demo`; P12 pendiente) |
+| Pruebas (todas o filtradas) | `bash scripts/pruebas.sh [args de pytest]`; un escenario: `bash scripts/pruebas.sh -m p06` (marcadores `p01`…`p11`, `humo`, `catalogo`, `importacion`, `demo`; `-m p12` delega en `prueba_persistencia.sh`). Matriz: `docs/contexto/matriz-pruebas.md` | **existe** |
 | Lint | `docker compose exec web ruff check --no-cache .` y `docker compose exec web ruff format --check --no-cache .` | **existe** |
-| Verificación completa | `bash scripts/verificar.sh` (log en `docs/evidencias/verificacion-AAAAMMDD-HHMM.log`) | **existe** |
-| Prueba de persistencia (P12) | — | pendiente |
+| Verificación completa | `bash scripts/verificar.sh [--completo]` (log en `docs/evidencias/verificacion-AAAAMMDD-HHMM.log`; `--completo` agrega al final la prueba de persistencia P12) | **existe** |
+| Prueba de persistencia (P12) | `bash scripts/prueba_persistencia.sh` (base de evaluación: exige servicios healthy y catálogo importado, crea una empresa marcador `P12-AAAAMMDDHHMMSS`, `docker compose down` **sin** `-v` y `up -d --wait`, comprueba marcador, conteos y volumen y da de baja el marcador; PASA/FALLA por comprobación; log en `docs/evidencias/persistencia-AAAAMMDD-HHMM.log`) | **existe** |
 | Reinicio destructivo de datos de prueba | `bash scripts/reiniciar_datos_prueba.sh` (pide escribir `BORRAR`; único uso permitido de `down -v`) | **existe** (requiere confirmación del usuario) |
 
 Al crear un comando, actualizar esta tabla en el mismo cambio.
@@ -193,6 +194,7 @@ El script (requiere `.env`) ejecuta en orden y se detiene en el primer fallo:
 5. `python manage.py makemigrations --check --dry-run` (sin migraciones pendientes).
 6. `sha256sum -c data/CatalogoServicios.xlsx.sha256` (Excel sin cambios).
 7. `pytest` dentro de `web` (base de pruebas aislada `test_*`).
+8. Solo con `--completo`: `scripts/prueba_persistencia.sh` (P12, reinicio sin `-v` sobre la base de evaluación).
 
 Guarda la salida en `docs/evidencias/verificacion-AAAAMMDD-HHMM.log`. Al cerrar una tarea se indica el log y el
 código de salida; si además se ejecutaron comandos propios de la tarea (importación, análisis del Excel), se

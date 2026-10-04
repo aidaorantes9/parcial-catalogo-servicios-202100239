@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
 # Verificación completa del proyecto (definición de terminado, AGENTS.md §10).
-# Uso: bash scripts/verificar.sh
+# Uso: bash scripts/verificar.sh [--completo]
+#   --completo  además ejecuta al final la prueba de persistencia P12 (scripts/prueba_persistencia.sh),
+#               que reinicia los contenedores con `docker compose down` (sin -v) y `up -d --wait`.
 # Requiere .env (cp .env.example .env). Reconstruye y levanta los servicios para verificar el código actual.
 set -euo pipefail
+
+completo=0
+for argumento in "$@"; do
+    case "$argumento" in
+        --completo) completo=1 ;;
+        *)
+            echo "Opción desconocida: $argumento (uso: bash scripts/verificar.sh [--completo])" >&2
+            exit 2
+            ;;
+    esac
+done
 
 raiz="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$raiz"
@@ -20,6 +33,7 @@ exec > >(tee "$log") 2>&1
 echo "== Verificación $(date '+%Y-%m-%d %H:%M:%S %Z') =="
 echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo 'sin git')"
 echo "Log: $log"
+[ "$completo" -eq 1 ] && echo "Modo: --completo (incluye persistencia P12)"
 
 paso() {
     local nombre="$1"
@@ -63,6 +77,9 @@ paso "migraciones al día (makemigrations --check --dry-run)" \
     web python manage.py makemigrations --check --dry-run
 paso "SHA-256 del Excel sin cambios" sha256sum -c data/CatalogoServicios.xlsx.sha256
 paso "pytest" web pytest
+if [ "$completo" -eq 1 ]; then
+    paso "persistencia P12 (down sin -v / up)" bash scripts/prueba_persistencia.sh
+fi
 
 echo
 echo "== RESULTADO: PASA (todos los pasos) =="

@@ -120,7 +120,7 @@ def test_p06_incidencias_registradas(importar):
 
 @pytest.mark.p06
 def test_p06_filas_de_continuacion_y_filas_42_67_no_crean_servicios(importar):
-    """Las filas de continuación pertenecen al servicio de su rango en C; las filas 42 y 67 (C
+    """P06: las filas de continuación pertenecen al servicio de su rango en C; las filas 42 y 67 (C
     vacía fuera de combinación) no crean servicio ni se asignan al anterior (D2)."""
     importar()
     filas_de = {
@@ -144,8 +144,9 @@ def test_p06_filas_de_continuacion_y_filas_42_67_no_crean_servicios(importar):
 
 @pytest.mark.p06
 def test_p06_trazabilidad_en_la_ficha(importar, cliente_admin):
-    """Cada servicio importado guarda hoja, filas, valores originales y transformaciones; la ficha
-    los muestra junto con sus observaciones. I5 se conserva tal cual (dato, no instrucción)."""
+    """P06: cada servicio importado guarda hoja, filas, valores originales y transformaciones; la
+    ficha los muestra junto con sus observaciones. I5 se conserva tal cual (dato, no
+    instrucción)."""
     importar()
     servicio = ServicioNivel2.objects.get(codigo="SE.01.01")
     origen = servicio.origen
@@ -168,10 +169,12 @@ def test_p06_trazabilidad_en_la_ficha(importar, cliente_admin):
     assert "Mantener Tableros de Control" in contenido
 
 
+@pytest.mark.p06
 @pytest.mark.importacion
 def test_original_con_hash_alterado_aborta(importar, tmp_path):
-    """El archivo original se verifica siempre: con una suma esperada distinta (un .sha256 temporal
-    alterado) el comando falla, no se crea nada y queda una ejecución FALLIDA con el hash real."""
+    """P06: el archivo original se verifica siempre: con una suma esperada distinta (un .sha256
+    temporal alterado) el comando falla, no se crea nada y queda una ejecución FALLIDA con el hash
+    real."""
     sha_alterado = tmp_path / "alterado.sha256"
     sha_alterado.write_text(f"{'0' * 64}  data/CatalogoServicios.xlsx\n", encoding="utf-8")
     with pytest.raises(CommandError, match="no coincide"):

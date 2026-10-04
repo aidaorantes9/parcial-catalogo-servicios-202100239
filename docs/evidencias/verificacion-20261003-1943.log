@@ -1,0 +1,145 @@
+== Verificación 2026-10-03 19:43:28 CST ==
+Commit: 7e74e30
+Log: docs/evidencias/verificacion-20261003-1943.log
+
+---- docker compose config ----
+PASA: docker compose config
+
+---- construir y levantar servicios (healthy) ----
+time="2026-10-03T19:43:29-06:00" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+#0 building with "default" instance using docker driver
+
+#1 [web internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.05kB 0.0s done
+#1 DONE 0.1s
+
+#2 [web internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.2s
+
+#3 [web internal] load .dockerignore
+#3 transferring context: 175B done
+#3 DONE 0.0s
+
+#4 [web internal] load build context
+#4 DONE 0.0s
+
+#5 [web 1/8] FROM docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+#5 resolve docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+#5 resolve docker.io/library/python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016 0.2s done
+#5 DONE 0.2s
+
+#4 [web internal] load build context
+#4 transferring context: 5.78kB 0.0s done
+#4 DONE 0.1s
+
+#6 [web 2/8] WORKDIR /app
+#6 CACHED
+
+#7 [web 3/8] RUN groupadd --gid "1000" app     && useradd --uid "1000" --gid app --create-home --shell /usr/sbin/nologin app
+#7 CACHED
+
+#8 [web 4/8] COPY requirements.txt /tmp/requirements.txt
+#8 CACHED
+
+#9 [web 5/8] RUN pip install -r /tmp/requirements.txt
+#9 CACHED
+
+#10 [web 6/8] COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+#10 CACHED
+
+#11 [web 7/8] COPY src/ /app/
+#11 CACHED
+
+#12 [web 8/8] RUN chmod 0755 /usr/local/bin/entrypoint.sh     && mkdir -p /app/staticfiles     && chown app:app /app/staticfiles
+#12 CACHED
+
+#13 [web] exporting to image
+#13 exporting layers 0.1s done
+#13 exporting manifest sha256:d9b018d2a67ce9d09903b7af7b0512a273ea29a4b72dfdeb1c839866103fbe37 0.0s done
+#13 exporting config sha256:96d0684c47d4e3b38346721c1940d9490be300dfe2975a7c533d9cfcac7e7263 0.0s done
+#13 exporting attestation manifest sha256:a5342046eb42c871ac0c39ca4c2f84603ca434668e5fcf462dd1cc40337ae922
+#13 exporting attestation manifest sha256:a5342046eb42c871ac0c39ca4c2f84603ca434668e5fcf462dd1cc40337ae922 0.2s done
+#13 exporting manifest list sha256:a824fe1e7289447448bfa6ac052fadc5d9a27519075d059bd8edc00eaa93f943
+#13 exporting manifest list sha256:a824fe1e7289447448bfa6ac052fadc5d9a27519075d059bd8edc00eaa93f943 0.1s done
+#13 naming to docker.io/library/catalogo-servicios-web:latest
+#13 naming to docker.io/library/catalogo-servicios-web:latest 0.0s done
+#13 unpacking to docker.io/library/catalogo-servicios-web:latest
+#13 unpacking to docker.io/library/catalogo-servicios-web:latest 0.2s done
+#13 DONE 1.2s
+
+#14 [web] resolving provenance for metadata file
+#14 DONE 0.1s
+ web  Built
+ Container catalogo-servicios-db-1  Running
+ Container catalogo-servicios-web-1  Recreate
+ Container catalogo-servicios-web-1  Recreated
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Starting
+ Container catalogo-servicios-web-1  Started
+ Container catalogo-servicios-web-1  Waiting
+ Container catalogo-servicios-db-1  Waiting
+ Container catalogo-servicios-db-1  Healthy
+ Container catalogo-servicios-web-1  Healthy
+PASA: construir y levantar servicios (healthy)
+
+---- logs de web sin errores ----
+Revisando logs de web desde 2026-10-04T01:43:39.556045913Z
+Sin líneas [ERROR], Traceback ni CRITICAL.
+PASA: logs de web sin errores
+
+---- ruff check ----
+All checks passed!
+PASA: ruff check
+
+---- ruff format --check ----
+73 files already formatted
+PASA: ruff format --check
+
+---- migraciones al día (makemigrations --check --dry-run) ----
+No changes detected
+PASA: migraciones al día (makemigrations --check --dry-run)
+
+---- SHA-256 del Excel sin cambios ----
+data/CatalogoServicios.xlsx: La suma coincide
+PASA: SHA-256 del Excel sin cambios
+
+---- pytest ----
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0
+django: version: 5.2.17, settings: config.settings (from env)
+rootdir: /app
+configfile: pytest.ini
+testpaths: tests
+plugins: django-4.14.0
+collected 136 items
+
+tests/test_cargar_demo.py ....                                           [  2%]
+tests/test_crear_cuentas_demo.py ..........                              [ 10%]
+tests/test_d1_catalogo.py ......                                         [ 14%]
+tests/test_d1_organizacion.py ......                                     [ 19%]
+tests/test_ficha_catalogo.py .........                                   [ 25%]
+tests/test_humo.py ...                                                   [ 27%]
+tests/test_importacion_pantalla.py ...                                   [ 30%]
+tests/test_p01_login.py ........                                         [ 36%]
+tests/test_p02_sesion.py ........                                        [ 41%]
+tests/test_p03_catalogo.py ....                                          [ 44%]
+tests/test_p03_organizacion.py .....                                     [ 48%]
+tests/test_p03_roles.py ......                                           [ 52%]
+tests/test_p04_jerarquia.py ..                                           [ 54%]
+tests/test_p05_catalogo.py ........                                      [ 60%]
+tests/test_p05_organizacion.py ......                                    [ 64%]
+tests/test_p06_importacion.py ........                                   [ 70%]
+tests/test_p07_reimportacion.py ....                                     [ 73%]
+tests/test_p08_se12_ausencias.py ....                                    [ 76%]
+tests/test_p09_minimo_maximo.py .......                                  [ 81%]
+tests/test_p10_busqueda.py ......                                        [ 86%]
+tests/test_p11_responsable.py ........                                   [ 91%]
+tests/test_referencia_inactiva.py ..                                     [ 93%]
+tests/test_usuarios_admin.py .......                                     [ 98%]
+tests/test_migracion_puesto.py ..                                        [100%]
+
+======================= 136 passed in 248.18s (0:04:08) ========================
+PASA: pytest
+
+== RESULTADO: PASA (todos los pasos) ==

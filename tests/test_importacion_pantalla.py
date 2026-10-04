@@ -8,9 +8,10 @@ from importacion.models import Ejecucion
 pytestmark = [pytest.mark.importacion, pytest.mark.django_db]
 
 
+@pytest.mark.p07
 def test_admin_ve_historial_y_observaciones(importar, cliente_admin):
-    """El administrador ve las ejecuciones (enlazadas desde el menú) y, en el detalle, los conteos
-    y las observaciones emitidas con enlace al servicio."""
+    """P07 (resultado trazable): el administrador ve las ejecuciones (enlazadas desde el menú) y,
+    en el detalle, los conteos y las observaciones emitidas con enlace al servicio."""
     importar()
     importar()
     lista = cliente_admin.get(reverse("importacion:ejecucion_lista"))
@@ -28,7 +29,10 @@ def test_admin_ve_historial_y_observaciones(importar, cliente_admin):
     assert "nueva" not in contenido.split("Observaciones emitidas")[1].split("</thead>")[1]
 
 
+@pytest.mark.p03
 def test_consulta_y_anonimo_no_acceden(importar, client, cliente_consulta):
+    """P03: el rol consulta recibe 403 en el historial de importaciones y no lo ve en el menú; sin
+    sesión se redirige al login."""
     importar()
     pk = Ejecucion.objects.get().pk
     for url in (
@@ -44,6 +48,7 @@ def test_consulta_y_anonimo_no_acceden(importar, client, cliente_consulta):
 
 
 def test_historial_es_solo_lectura(importar, cliente_admin):
+    """El historial de importaciones no acepta POST (405): es solo lectura."""
     importar()
     pk = Ejecucion.objects.get().pk
     url = reverse("importacion:ejecucion_detalle", args=[pk])

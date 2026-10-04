@@ -58,7 +58,8 @@ def test_p07_segunda_importacion_sin_duplicados(importar):
 
 @pytest.mark.p07
 def test_p07_la_ficha_sigue_mostrando_las_observaciones(importar, cliente_consulta):
-    """Tras reimportar, la ficha muestra las observaciones vigentes (re-emitidas, no duplicadas)."""
+    """P07: tras reimportar, la ficha muestra las observaciones vigentes (re-emitidas, no
+    duplicadas)."""
     importar()
     importar()
     servicio = ServicioNivel2.objects.get(codigo="SE.12.3")
@@ -69,7 +70,7 @@ def test_p07_la_ficha_sigue_mostrando_las_observaciones(importar, cliente_consul
 
 @pytest.mark.p07
 def test_p07_reimportacion_respeta_ediciones_manuales(importar):
-    """S7/S8: se restauran los campos del Excel (cuenta como actualizado), pero no se tocan la
+    """P07 (S7/S8): se restauran los campos del Excel (cuenta como actualizado), pero no se tocan la
     baja lógica, el estado REVISADO ni el código funcional editado por un administrador."""
     importar()
     ServicioNivel2.objects.filter(codigo="SE.12.1").update(estado_revision="REVISADO")
@@ -94,7 +95,7 @@ def test_p07_reimportacion_respeta_ediciones_manuales(importar):
 @pytest.mark.p07
 @pytest.mark.demo
 def test_p07_reimportacion_no_borra_asignaciones_de_cargar_demo(importar, monkeypatch):
-    """La reimportación no toca sección ni usuario responsables asignados por `cargar_demo`."""
+    """P07: la reimportación no toca sección ni usuario responsables asignados por `cargar_demo`."""
     monkeypatch.delenv("DEMO_RESPONSABLE_PASSWORD", raising=False)
     importar()
     call_command("cargar_demo", stdout=StringIO())

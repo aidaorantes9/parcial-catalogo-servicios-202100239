@@ -26,7 +26,7 @@ def _dar_de_baja(registro):
 
 
 def test_reimportar_con_nivel1_y_tipo_dados_de_baja(importar):
-    """Con SE.11 y el tipo «IT Management» dados de baja, la reimportación termina bien: los
+    """P07: con SE.11 y el tipo «IT Management» dados de baja, la reimportación termina bien: los
     servicios afectados conservan sus valores actuales (se cuentan como observados, no como
     actualizados), aparece REFERENCIA_INACTIVA con código, columna, fila y valor, y no se pierde
     ni duplica nada."""
@@ -107,8 +107,8 @@ def test_reimportar_con_nivel1_y_tipo_dados_de_baja(importar):
 
 
 def test_servicio_nuevo_con_nivel1_inactivo_no_se_crea(importar, excel_modificado):
-    """Un servicio nuevo cuyo nivel 1 está inactivo no se crea: se cuenta como omitido y se registra
-    REFERENCIA_INACTIVA. Los controles cuentan registros existentes, así que con el archivo
+    """P07: un servicio nuevo cuyo nivel 1 está inactivo no se crea: se cuenta como omitido y se
+    registra REFERENCIA_INACTIVA. Los controles cuentan registros existentes, así que con el archivo
     original (controles exigidos) la importación falla 12/43; con otro archivo solo se informa."""
     ServicioNivel1.objects.create(codigo="SE.12", nombre="Creado antes", activo=False)
 

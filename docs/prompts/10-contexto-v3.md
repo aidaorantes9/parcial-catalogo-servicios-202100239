@@ -4,7 +4,7 @@
 - Modelo: Claude Opus 5.5 (cuenta Claude Pro)
 - Fecha de uso: 2026-10-03
 - Fase: Context engineering (actualización #2)
-- Commit resultante: (se completa después del commit)
+- Commit resultante: `7e74e30`
 
 ## Objetivo
 Actualizar `AGENTS.md` con lo que se aprendió al implementar el importador, para que las siguientes sesiones del asistente trabajen con las reglas reales y no con las de v2.
