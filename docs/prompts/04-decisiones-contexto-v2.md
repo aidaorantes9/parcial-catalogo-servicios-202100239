@@ -87,7 +87,23 @@ git status --short
 - `fases.md`: fase de modelo marcada como realizada.
 - El asistente señaló que para probar la regla F–H se necesitará un Excel de prueba, porque el original no contiene valores fuera de lista.
 
-Capturas: `../evidencias/prompt03-resultado.png`, `../evidencias/prompt04-decisiones.png`, `../evidencias/prompt04-ajuste-activo.png`, `../evidencias/prompt04-regla-fgh.webp`.
+Capturas: 
+
+![prompt03-resultado](../evidencias/prompt03-resultado.png)
+
+, 
+
+![prompt04-decisiones](../evidencias/prompt04-decisiones.png)
+
+, 
+
+![prompt04-ajuste-activo](../evidencias/prompt04-ajuste-activo.png)
+
+, 
+
+![prompt04-regla-fgh](../evidencias/prompt04-regla-fgh.webp)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí. `grep -c "PENDIENTE DE DECISIÓN" AGENTS.md docs/contexto/modelo-datos.md` devolvió 0 y 0; AGENTS.md tiene la fila v2; `sha256sum -c` confirma el Excel intacto.

@@ -66,7 +66,19 @@ El script se ejecuta con el comando indicado, termina con código 0, reporta exa
 - I5 contiene un texto ajeno al servicio; se reportó como hallazgo y no se trató como instrucción.
 - Propuesta (no decisión) de nombre canónico para SE.12: "Suministrar Analitica", con argumentos a favor y en contra.
 
-Capturas: `../evidencias/prompt01-autocorreccion.png`, `../evidencias/prompt01-cambio-hash.png`, `../evidencias/prompt01-resultado.png`.
+Capturas: 
+
+![prompt01-autocorreccion](../evidencias/prompt01-autocorreccion.png)
+
+, 
+
+![prompt01-cambio-hash](../evidencias/prompt01-cambio-hash.png)
+
+, 
+
+![prompt01-resultado](../evidencias/prompt01-resultado.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí. Verificado manualmente fuera del asistente: el script terminó con código de salida 0, reportó 12/12 y 46/46 en PASA, y `sha256sum -c` confirmó que el Excel no fue modificado. Ver `../evidencias/prompt01-verificacion.log`.

@@ -63,7 +63,11 @@ La primera importación da 12/46 en PASA, la segunda da 0 creados y los mismos t
 
 Resultado: la primera importación dio 12/46 PASA con 17 observaciones y la segunda 0 creados y 0 observaciones nuevas. `cargar_demo` dejó 4 asignaciones en 2 secciones. El asistente reportó 8 hallazgos que no estaban previstos en el contexto. Acepté seis: la huella para no duplicar observaciones, el tipo nuevo `CONFLICTO_ATRIBUTOS`, que un servicio quede pendiente de revisión si tiene alguna advertencia (por eso SE.01.01 queda pendiente por la celda I5), la precisión sobre el supuesto S7, que SE.11 repite el patrón de SE.12 sin generar observación, y que los usuarios demo se identifican por su puesto DEMO.
 
-Captura: `../evidencias/prompt09-resultado.png`.
+Captura: 
+
+![prompt09-resultado](../evidencias/prompt09-resultado.png)
+
+.
 
 ## Iteración 2: dos problemas en el importador
 Problemas observados:
@@ -88,7 +92,11 @@ INSTRUCCIONES
 No hagas commit.
 ```
 
-Resultado comprobado: la importación ahora continúa, conserva los valores del servicio afectado y registra `REFERENCIA_INACTIVA`. Con otro archivo se registra su hash, se muestra un aviso y los controles son informativos salvo con `--exigir-controles`. Se agregaron pruebas para los tres casos y la verificación terminó con 136 pruebas aprobadas (log `docs/evidencias/verificacion-20261003-0906.log`). Captura: `../evidencias/prompt09-iteracion2.png`.
+Resultado comprobado: la importación ahora continúa, conserva los valores del servicio afectado y registra `REFERENCIA_INACTIVA`. Con otro archivo se registra su hash, se muestra un aviso y los controles son informativos salvo con `--exigir-controles`. Se agregaron pruebas para los tres casos y la verificación terminó con 136 pruebas aprobadas (log `docs/evidencias/verificacion-20261003-0906.log`). Captura: 
+
+![prompt09-iteracion2](../evidencias/prompt09-iteracion2.png)
+
+.
 
 El asistente aclaró un efecto de combinar las reglas: si un servicio nuevo no se crea porque su nivel 1 está inactivo, falta en el conteo y con el archivo original la importación falla. Lo acepté, porque solo puede pasar antes de la primera importación; después D1 impide desactivar un nivel 1 con servicios activos.
 
@@ -96,7 +104,19 @@ El asistente aclaró un efecto de combinar las reglas: si un servicio nuevo no s
 Sí. Lo comprobé yo misma con `bash scripts/importar.sh`: ejecución #5 exitosa, 12/46 PASA, 0 creados, 0 actualizados, 0 observaciones nuevas y código de salida 0 (log `docs/evidencias/importacion-20261003-0912.log`). En el resumen aparecen los seis casos del enunciado: 49 filas de continuación omitidas, el conflicto de SE.12, el formato de SE.12.n, los atributos ausentes como NULL, las filas 42 y 67 sin asignar y la trazabilidad de cada servicio.
 
 En el navegador revisé:
-- El listado de servicios con las asignaciones de `cargar_demo` (`../evidencias/prompt09-listado.png`).
-- La ficha de SE.12.1 con hoja, fila, celdas originales y transformaciones (`../evidencias/prompt09-ficha-se12.png`).
-- El historial de importaciones, donde solo la primera creó registros (`../evidencias/prompt09-ejecuciones.png`).
+- El listado de servicios con las asignaciones de `cargar_demo` (
+
+![prompt09-listado](../evidencias/prompt09-listado.png)
+
+).
+- La ficha de SE.12.1 con hoja, fila, celdas originales y transformaciones (
+
+![prompt09-ficha-se12](../evidencias/prompt09-ficha-se12.png)
+
+).
+- El historial de importaciones, donde solo la primera creó registros (
+
+![prompt09-ejecuciones](../evidencias/prompt09-ejecuciones.png)
+
+).
 

@@ -71,7 +71,11 @@ INSTRUCCIONES
 RESTRICCIONES
 Solo lee el historial para extraer mis mensajes; no lo copies al repositorio. No hagas commit.
 ```
-Reemplazó los 19 marcadores con el texto exacto que envié, e indicó para cada uno la sesión, la fecha y la hora en que lo escribí. El historial no se copió al repositorio. Captura de la tabla de correspondencia: `../evidencias/prompt12-correspondencia-prompts.png`.
+Reemplazó los 19 marcadores con el texto exacto que envié, e indicó para cada uno la sesión, la fecha y la hora en que lo escribí. El historial no se copió al repositorio. Captura de la tabla de correspondencia: 
+
+![prompt12-correspondencia-prompts](../evidencias/prompt12-correspondencia-prompts.png)
+
+.
 
 ## Seguimiento: aclaración de los hallazgos del importador
 ```
@@ -89,7 +93,11 @@ No hagas commit.
 
 Los aportes y la reflexión de la sección 10 los escribí yo y reemplacé los marcadores. Borré las listas de apoyo que había dejado el asistente.
 
-Captura: `../evidencias/prompt12-resultado.png`.
+Captura: 
+
+![prompt12-resultado](../evidencias/prompt12-resultado.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí en lo que se puede comprobar dentro del repositorio: 10 secciones, cero guiones largos y enlaces y hashes válidos. La comprobación de levantar todo desde un clon limpio la hice después, por separado.

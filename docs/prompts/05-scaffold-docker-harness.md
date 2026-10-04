@@ -59,7 +59,11 @@ Problema observado: en mi prompt pedí que el usuario heredara de `AbstractUser`
 
 Prompt revisado: le indiqué usar `AbstractBaseUser` (opción 1), para ser coherente con S6 y no tener que mantener `is_staff` sincronizado con el rol.
 
-Resultado comprobado: la migración `cuentas.0001_initial` creó el usuario con `username`, `email`, `nombre`, `rol` e `is_active`, con restricciones de unicidad sin distinguir mayúsculas. Captura: `../evidencias/prompt05-conflicto-usuario.png`.
+Resultado comprobado: la migración `cuentas.0001_initial` creó el usuario con `username`, `email`, `nombre`, `rol` e `is_active`, con restricciones de unicidad sin distinguir mayúsculas. Captura: 
+
+![prompt05-conflicto-usuario](../evidencias/prompt05-conflicto-usuario.png)
+
+.
 
 Lo que aprendí: el prompt tenía un error mío y el contexto versionado sirvió para detectarlo.
 
@@ -74,7 +78,11 @@ Mientras el asistente levantaba los servicios, la computadora se suspendió y la
 - Pruebas de humo para `/` y `/salud/`. Las pruebas usan una base aparte que empieza con `test_`.
 - El puerto queda publicado solo en `127.0.0.1:8000`.
 
-Captura: `../evidencias/prompt05-resultado.png`.
+Captura: 
+
+![prompt05-resultado](../evidencias/prompt05-resultado.png)
+
+.
 
 ## Seguimiento 5b: ciclo de harness con un fallo real
 Al revisar los logs del contenedor vi `[ERROR] Control server error: Permission denied: '/home/app'`. `verificar.sh` no lo había detectado porque no revisaba los logs. Le pedí al asistente agregar ese control, ejecutarlo antes de corregir, corregir la causa y volver a ejecutar.
@@ -100,7 +108,15 @@ Los dos logs, el README del ciclo y un resumen corto.
 
 Resultado: el control nuevo falló como esperaba. La causa era que el Dockerfile creaba el usuario `app` con `--no-create-home` y gunicorn no podía crear su socket de control. Se cambió a `--create-home` y la verificación volvió a terminar con código 0. En el proceso el asistente encontró otro problema en el script: dos ejecuciones en el mismo minuto se mezclaban en el mismo log. Lo corrigió agregando un sufijo al nombre. El fallo no fue introducido a propósito.
 
-Detalle completo: `../evidencias/ciclo-harness/README.md`, `01-fallo.log` y `02-exito.log`. Capturas: `../evidencias/ciclo-harness-fallo.png` y `../evidencias/ciclo-harness-exito.png`.
+Detalle completo: `../evidencias/ciclo-harness/README.md`, `01-fallo.log` y `02-exito.log`. Capturas: 
+
+![ciclo-harness-fallo](../evidencias/ciclo-harness-fallo.png)
+
+ y 
+
+![ciclo-harness-exito](../evidencias/ciclo-harness-exito.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí. Lo comprobé yo misma ejecutando `bash scripts/verificar.sh`: los 8 pasos en PASA, 3 pruebas aprobadas y código de salida 0. El log está en `docs/evidencias/verificacion-20261002-1902.log`.

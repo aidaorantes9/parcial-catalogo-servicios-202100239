@@ -1,0 +1,75 @@
+== P12 Persistencia 2026-10-03 20:45:09 CST ==
+Commit: f4c61e2
+Log: docs/evidencias/persistencia-20261003-2045.log
+
+---- Precondiciones ----
+PASA: db y web levantados y healthy
+PASA: catálogo importado (≥12 N1 y ≥46 N2 con origen, al menos una ejecución EXITOSA)
+
+---- Estado antes del reinicio ----
+  n1=12
+  n2=46
+  n1_importados=12
+  n2_importados=46
+  usuarios=4
+  empresas=1
+  asignaciones=4
+  ejecuciones=2
+  ejecuciones_exitosas=2
+  volumen=catalogo-servicios_datos_postgres (creado 2026-10-02T12:42:08-06:00)
+
+---- Marcador ----
+PASA: empresa marcador P12-20261003204512 creada (id 2)
+
+---- docker compose down (sin -v) ----
+ Container clonlimpio-web-1  Stopping
+ Container clonlimpio-web-1  Stopped
+ Container clonlimpio-web-1  Removing
+ Container clonlimpio-web-1  Removed
+ Container clonlimpio-db-1  Stopping
+ Container clonlimpio-db-1  Stopped
+ Container clonlimpio-db-1  Removing
+ Container clonlimpio-db-1  Removed
+ Network clonlimpio_default  Removing
+ Network clonlimpio_default  Removed
+
+---- docker compose up -d --wait ----
+ Network clonlimpio_default  Creating
+ Network clonlimpio_default  Created
+ Container clonlimpio-db-1  Creating
+ Container clonlimpio-db-1  Created
+ Container clonlimpio-web-1  Creating
+ Container clonlimpio-web-1  Created
+ Container clonlimpio-db-1  Starting
+ Container clonlimpio-db-1  Started
+ Container clonlimpio-db-1  Waiting
+ Container clonlimpio-db-1  Healthy
+ Container clonlimpio-web-1  Starting
+ Container clonlimpio-web-1  Started
+ Container clonlimpio-web-1  Waiting
+ Container clonlimpio-db-1  Waiting
+ Container clonlimpio-db-1  Healthy
+ Container clonlimpio-web-1  Healthy
+PASA: servicios levantados de nuevo y healthy
+
+---- Comprobaciones después del reinicio ----
+  n1=12
+  n2=46
+  n1_importados=12
+  n2_importados=46
+  usuarios=4
+  empresas=2
+  asignaciones=4
+  ejecuciones=2
+  ejecuciones_exitosas=2
+PASA: mismo volumen datos_postgres (no se recreó)
+PASA: el marcador P12-20261003204512 existe tras el reinicio
+PASA: conteo n1 igual (12 → 12)
+PASA: conteo n2 igual (46 → 46)
+PASA: conteo usuarios igual (4 → 4)
+PASA: conteo asignaciones igual (4 → 4)
+PASA: conteo ejecuciones igual (2 → 2)
+PASA: conteo empresas = antes + marcador (1 + 1 → 2)
+PASA: marcador P12-20261003204512 dado de baja (activo = False, registro conservado)
+
+== RESULTADO P12: PASA (todas las comprobaciones) ==

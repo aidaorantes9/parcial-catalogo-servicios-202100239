@@ -63,15 +63,31 @@ Decisiones del asistente que revisé y acepté:
 - Se puede editar un registro con padre inactivo si no se cambia de padre, porque el enunciado solo prohíbe asociaciones nuevas.
 - CONSULTA ve los usuarios de un puesto, pero sin enlace a su ficha.
 
-Captura: `../evidencias/prompt07-resultado.png`.
+Captura: 
+
+![prompt07-resultado](../evidencias/prompt07-resultado.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí. `bash scripts/verificar.sh` terminó con código 0 y 63 pruebas aprobadas, incluidas P03, P04 y P05 (log `docs/evidencias/verificacion-20261002-1945.log`).
 
 También lo probé en el navegador:
-- Como admin creé la empresa EMP1 y el área AR1; el detalle muestra la ruta completa (`../evidencias/prompt07-jerarquia.png`).
-- Intenté desactivar EMP1 con AR1 activa y se rechazó mostrando el dependiente (`../evidencias/prompt07-d1-rechazo.png`).
-- Como consulta vi la lista de empresas sin botones de escritura (`../evidencias/prompt07-consulta-lectura.png`).
+- Como admin creé la empresa EMP1 y el área AR1; el detalle muestra la ruta completa (
+
+![prompt07-jerarquia](../evidencias/prompt07-jerarquia.png)
+
+).
+- Intenté desactivar EMP1 con AR1 activa y se rechazó mostrando el dependiente (
+
+![prompt07-d1-rechazo](../evidencias/prompt07-d1-rechazo.png)
+
+).
+- Como consulta vi la lista de empresas sin botones de escritura (
+
+![prompt07-consulta-lectura](../evidencias/prompt07-consulta-lectura.png)
+
+).
 
 Los datos de EMP1 y AR1 quedaron en la base de evaluación a propósito, para usarlos después en la prueba de persistencia.
 

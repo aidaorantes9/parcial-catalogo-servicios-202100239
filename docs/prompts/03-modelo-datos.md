@@ -56,7 +56,11 @@ Las 12 columnas del Excel aparecen mapeadas; todas las restricciones del enuncia
 - 9 decisiones pendientes (D1–D9) con opciones, ventajas, desventajas y recomendación, y 3 supuestos a revisar (S4, S6, S7).
 - El asistente verificó el hash del Excel y que solo se creó el archivo pedido.
 
-Captura: `../evidencias/prompt03-resultado.png`.
+Captura: 
+
+![prompt03-resultado](../evidencias/prompt03-resultado.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí. Las 12 columnas están mapeadas, cada restricción tiene implementación indicada y ninguna decisión fue tomada por el asistente.

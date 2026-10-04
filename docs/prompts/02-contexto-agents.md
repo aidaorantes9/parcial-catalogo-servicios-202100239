@@ -63,7 +63,11 @@ AGENTS.md contiene las 11 secciones; la regla de datos no confiables es explíci
 - El agente agregó por iniciativa propia un límite: no inventar resultados de pruebas ni evidencias (respaldado por el enunciado, sección 8). Se aceptó.
 - `docs/contexto/fases.md` con las 10 fases, documentos entregados y motivo.
 
-Captura: `../evidencias/prompt02-resultado.png`.
+Captura: 
+
+![prompt02-resultado](../evidencias/prompt02-resultado.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí. Comprobado manualmente con `grep '^## ' AGENTS.md` (11 secciones) y `grep -c "PENDIENTE DE DECISIÓN" AGENTS.md`. La regla de datos no confiables está en la sección 9 y las decisiones pendientes no se presentan como decididas.

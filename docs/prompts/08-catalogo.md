@@ -73,12 +73,20 @@ Decisiones del asistente que revisé y acepté:
 - Descripción y métrica no se recortan al guardar, para no alterar el texto original de I5.
 - El listado de nivel 2 muestra solo los activos por defecto, y el filtro permite ver todos.
 
-Captura: `../evidencias/prompt08-resultado.png`.
+Captura: 
+
+![prompt08-resultado](../evidencias/prompt08-resultado.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí. `bash scripts/verificar.sh` terminó con código 0 y 111 pruebas aprobadas (log `docs/evidencias/verificacion-20261003-0819.log`), incluidas P03, P05, P09, P10 y P11. No hubo cambios en `data/` ni `.env` versionado.
 
-En el navegador creé un servicio de nivel 2 con mínimo 10 y máximo 5, y el formulario no lo guardó (`../evidencias/prompt08-minimo-maximo.png`). Después desactivé el servicio de prueba T1 para que no se mezclara con los datos del Excel.
+En el navegador creé un servicio de nivel 2 con mínimo 10 y máximo 5, y el formulario no lo guardó (
+
+![prompt08-minimo-maximo](../evidencias/prompt08-minimo-maximo.png)
+
+). Después desactivé el servicio de prueba T1 para que no se mezclara con los datos del Excel.
 
 ## Problemas observados e iteración
 No hizo falta revisar el prompt. El único problema fue el corte de conexión, que se resolvió retomando la misma sesión.

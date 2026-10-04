@@ -1,0 +1,67 @@
+== Importación 2026-10-03 20:41:05 CST ==
+Commit: f4c61e2
+Log: docs/evidencias/importacion-20261003-2041.log
+Argumentos: (ninguno)
+data/CatalogoServicios.xlsx: La suma coincide
+
+== Resumen de importación ==
+Archivo: data/CatalogoServicios.xlsx
+SHA-256: de3b478a5faeeeaebce1aa7726e0e3321188a68e41bbb656e1d17b0c5b74dcf0
+Estado: EXITOSA (ejecución #2)
+
+Filas 5–101:
+   46 servicios de nivel 2
+   49 filas de continuación (omitidas) → [6, 7, 22, 23, 27, 28, 29, 31, 32, 33, 34, 36, 37, 39, 41, 45, 46, 47, 49, 51, 52, 53, 54, 57, 64, 65, 66, 69, 70, 71, 72, 73, 75, 76, 77, 78, 80, 81, 83, 84, 86, 87, 88, 89, 91, 92, 93, 94, 95]
+    2 filas sin código fuera de combinación (omitidas) → [42, 67]
+    0 filas vacías (omitidas)
+    0 servicios nuevos no creados: nivel 1 inactivo (omitidos)
+
+Entidad                   Creados  Actualiz.  Sin camb.  Observ.
+Clases de servicio              0          0          2        0
+Criticidades                    0          0          5        0
+Tipos de servicio               0          0         11        0
+Servicios de nivel 1            0          0         12        0
+Servicios de nivel 2            0          0         46        0
+TOTAL                           0          0         76        0
+
+Creados: 0 · Actualizados: 0 · Sin cambios: 76 · Omitidos: 51 · Observados: 17 (0 nuevas)
+Registros observados (referencia inactiva, sin cambios aplicados): 0
+
+Observaciones por tipo (emitidas en esta ejecución / nuevas):
+  ATRIBUTOS_AUSENTES                3 / 0  Atributos ausentes
+  AUSENCIA_EN_CONTINUACION          1 / 0  Ausencia en filas de continuación
+  CODIGO_FORMATO_NO_ESTANDAR        3 / 0  Código con formato no estándar
+  CONFLICTO_NOMBRE_N1               1 / 0  Conflicto de nombre de nivel 1
+  CONTROL_CONTEO                    2 / 0  Control de conteo
+  CORRECCION_APLICADA               1 / 0  Corrección aplicada
+  ESPACIOS_EN_TEXTO                 1 / 0  Espacios en el texto
+  FILA_SIN_CODIGO                   2 / 0  Fila sin código
+  PADRE_POR_PREFIJO                 1 / 0  Nivel 1 asignado por prefijo
+  POSIBLE_ERROR_ESCRITURA           1 / 0  Posible error de escritura
+  TEXTO_CON_FORMA_DE_INSTRUCCION    1 / 0  Texto con forma de instrucción
+
+Detalle de observaciones con advertencia o error:
+  [ADVERTENCIA] CONFLICTO_NOMBRE_N1 · SE.12 · filas [99, 100]:
+      El código SE.12 tiene nombres distintos en la columna B. Se usa «Suministrar Analitica» (B99) y se conservan todos como evidencia.
+  [ADVERTENCIA] TEXTO_CON_FORMA_DE_INSTRUCCION · SE.01.01 · filas [5]:
+      La celda I5 contiene texto con forma de instrucción. Se conserva como dato y no se obedece.
+  [ADVERTENCIA] ATRIBUTOS_AUSENTES · SE.12.1 · filas [99]:
+      Sin dato en el Excel: ACTIVO (E), clase (F), criticidad (G), tipo (H), métrica (J). Se guardan como desconocidos (NULL), sin inventar valores.
+  [ADVERTENCIA] ATRIBUTOS_AUSENTES · SE.12.2 · filas [100]:
+      Sin dato en el Excel: ACTIVO (E), clase (F), criticidad (G), tipo (H), métrica (J). Se guardan como desconocidos (NULL), sin inventar valores.
+  [ADVERTENCIA] POSIBLE_ERROR_ESCRITURA · SE.12.2 · filas [100]:
+      «Análsis» en D100 parece un error de escritura de «Análisis». No se corrige.
+  [ADVERTENCIA] PADRE_POR_PREFIJO · SE.12.3 · filas [101]:
+      A101 está vacía y fuera de combinación; el nivel 1 SE.12 se asigna por el prefijo del código.
+  [ADVERTENCIA] ATRIBUTOS_AUSENTES · SE.12.3 · filas [101]:
+      Sin dato en el Excel: ACTIVO (E), clase (F), criticidad (G), tipo (H), métrica (J). Se guardan como desconocidos (NULL), sin inventar valores.
+  [ADVERTENCIA] FILA_SIN_CODIGO · sin código · filas [42]:
+      La fila 42 tiene datos pero C está vacía y fuera de combinación; no crea servicio ni se asigna a otro.
+  [ADVERTENCIA] FILA_SIN_CODIGO · sin código · filas [67]:
+      La fila 67 tiene datos pero C está vacía y fuera de combinación; no crea servicio ni se asigna a otro.
+
+Controles:
+  Códigos de nivel 1: 12 / esperado 12 → PASA
+  Códigos de nivel 2: 46 / esperado 46 → PASA
+
+Código de salida: 0

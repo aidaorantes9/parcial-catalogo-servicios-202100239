@@ -65,10 +65,18 @@ Actualiza docs/contexto/fases.md marcando la fase 9 (pruebas) como realizada, co
 
 El asistente aclaró que no hay pruebas con un navegador real: P12 es la única de extremo a extremo y P01 a P11 son de integración. La revisión de la interfaz la hice yo a mano en Firefox en cada fase (capturas de los prompts 06 a 09).
 
-Captura: `../evidencias/prompt11-resultado.png`.
+Captura: 
+
+![prompt11-resultado](../evidencias/prompt11-resultado.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
-Sí. Ejecuté yo misma `bash scripts/verificar.sh --completo` y terminó con código 0. P12 comprobó que el volumen de PostgreSQL era el mismo, que el marcador existía después del reinicio y que los conteos no cambiaron (46 servicios, 4 usuarios, 4 asignaciones y 4 ejecuciones). Captura: `../evidencias/prompt11-persistencia.png`.
+Sí. Ejecuté yo misma `bash scripts/verificar.sh --completo` y terminó con código 0. P12 comprobó que el volumen de PostgreSQL era el mismo, que el marcador existía después del reinicio y que los conteos no cambiaron (46 servicios, 4 usuarios, 4 asignaciones y 4 ejecuciones). Captura: 
+
+![prompt11-persistencia](../evidencias/prompt11-persistencia.png)
+
+.
 
 El conteo de nivel 1 sale 13 porque incluye el servicio de prueba T1 que creé en la fase del catálogo (está dado de baja). Los importados son 12.
 

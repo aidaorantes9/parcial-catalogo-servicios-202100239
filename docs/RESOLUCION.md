@@ -335,7 +335,7 @@ de `AbstractUser`, pero en v2 yo había aceptado el supuesto S6 (sin `is_staff` 
 detectó la contradicción con el contexto y me preguntó. Le indiqué usar `AbstractBaseUser`. Comprobé el resultado
 en la migración `cuentas.0001_initial` y en la verificación con código 0
 ([verificacion-20261002-1902.log](evidencias/verificacion-20261002-1902.log)). Captura:
-[prompt05-conflicto-usuario.png](evidencias/prompt05-conflicto-usuario.png).
+![prompt05-conflicto-usuario.png](evidencias/prompt05-conflicto-usuario.png).
 
 Iteración 2, prompt 09 (referencias inactivas y hash con `--archivo`): de los ocho hallazgos que reportó el asistente acepté seis, y revisando el primer resultado noté dos
 problemas. Si el Excel apuntaba a un nivel 1 o a un valor de catálogo dado de baja, toda la importación se
@@ -344,7 +344,7 @@ no servía con otro libro. Con el prompt 9b la importación continúa y registra
 archivo se registra su hash y los controles son informativos salvo con `--exigir-controles`. Se agregaron
 pruebas y la verificación pasó con 136 pruebas
 ([verificacion-20261003-0906.log](evidencias/verificacion-20261003-0906.log)). Captura:
-[prompt09-iteracion2.png](evidencias/prompt09-iteracion2.png).
+![prompt09-iteracion2.png](evidencias/prompt09-iteracion2.png).
 
 También hubo seguimientos menores: 4b (ACTIVO desconocido no debía ser NULL), 4c (regla para valores fuera de
 lista en F, G y H), 10b y 10c (frases desactualizadas de `AGENTS.md`) y el seguimiento de `fases.md` en el
@@ -373,8 +373,8 @@ corregir: falló como esperaba
 proceso apareció otro defecto del harness: dos ejecuciones en el mismo minuto se mezclaban en un log, y se
 corrigió con un sufijo. El fallo no fue introducido a propósito. Detalle:
 [ciclo-harness/README.md](evidencias/ciclo-harness/README.md). Capturas:
-[ciclo-harness-fallo.png](evidencias/ciclo-harness-fallo.png) y
-[ciclo-harness-exito.png](evidencias/ciclo-harness-exito.png). Quedó en el commit `7ddcb3f`.
+![ciclo-harness-fallo.png](evidencias/ciclo-harness-fallo.png) y
+![ciclo-harness-exito.png](evidencias/ciclo-harness-exito.png). Quedó en el commit `7ddcb3f`.
 
 Un segundo ciclo ocurrió en el prompt 11: la primera `verificar.sh --completo` falló en `ruff check` por cinco
 líneas de más de 100 columnas ([verificacion-20261003-1931.log](evidencias/verificacion-20261003-1931.log)); el
@@ -391,10 +391,10 @@ Las rutas de código son relativas a `src/`. Las pruebas están en `tests/`. "Ca
 
 | Requisito | Implementación | Prueba | Evidencia |
 |---|---|---|---|
-| Login con usuario o correo validado localmente | `cuentas/backends.py` (`UsuarioOCorreoBackend`), `cuentas/forms.py` | `test_p01_login.py` | [verificacion-20261003-1950.log](evidencias/verificacion-20261003-1950.log); captura `prompt06-login-invalido.png` |
+| Login con usuario o correo validado localmente | `cuentas/backends.py` (`UsuarioOCorreoBackend`), `cuentas/forms.py` | `test_p01_login.py` | [verificacion-20261003-1950.log](evidencias/verificacion-20261003-1950.log); captura [prompt06-login-invalido.png](evidencias/prompt06-login-invalido.png) |
 | Hash especializado con sal | `PASSWORD_HASHERS` en `config/settings.py` (Argon2) | `test_p01_login.py::test_password_guardada_con_argon2` | Mismo log |
-| Protección en el servidor | `LoginRequiredMiddleware`, `cuentas/permisos.py` | `test_p02_sesion.py`, `test_p03_roles.py`, `test_p03_organizacion.py`, `test_p03_catalogo.py` | Mismo log; captura `prompt06-consulta-403.png` |
-| Roles admin y consulta, sin hashes para consulta | `cuentas/models.py` (`rol` con CHECK), `LecturaRequeridaMixin`, plantilla `cuentas/_datos_usuario.html` | `test_p03_roles.py`, `test_usuarios_admin.py` | Mismo log; captura `prompt07-consulta-lectura.png` |
+| Protección en el servidor | `LoginRequiredMiddleware`, `cuentas/permisos.py` | `test_p02_sesion.py`, `test_p03_roles.py`, `test_p03_organizacion.py`, `test_p03_catalogo.py` | Mismo log; captura [prompt06-consulta-403.png](evidencias/prompt06-consulta-403.png) |
+| Roles admin y consulta, sin hashes para consulta | `cuentas/models.py` (`rol` con CHECK), `LecturaRequeridaMixin`, plantilla `cuentas/_datos_usuario.html` | `test_p03_roles.py`, `test_usuarios_admin.py` | Mismo log; captura [prompt07-consulta-lectura.png](evidencias/prompt07-consulta-lectura.png) |
 | Inactivos bloqueados; logout invalida la sesión | `cuentas/middleware.py`, `LogoutView` por POST | `test_p02_sesion.py` | Mismo log |
 | Cuentas de evaluación reproducibles | `cuentas/management/commands/crear_cuentas_demo.py`, `.env.example` | `test_crear_cuentas_demo.py` | Mismo log |
 
@@ -402,12 +402,12 @@ Las rutas de código son relativas a `src/`. Las pruebas están en `tests/`. "Ca
 
 | Requisito | Implementación | Prueba | Evidencia |
 |---|---|---|---|
-| Alta, consulta, modificación y baja lógica de las 5 unidades y de usuarios | `organizacion/models.py`, `organizacion/views.py`, `cuentas/views.py` | `test_p04_jerarquia.py`, `test_usuarios_admin.py` | Log 1950; captura `prompt07-jerarquia.png` |
+| Alta, consulta, modificación y baja lógica de las 5 unidades y de usuarios | `organizacion/models.py`, `organizacion/views.py`, `cuentas/views.py` | `test_p04_jerarquia.py`, `test_usuarios_admin.py` | Log 1950; captura [prompt07-jerarquia.png](evidencias/prompt07-jerarquia.png) |
 | Jerarquía con un único padre; varios usuarios por puesto | FK `NOT NULL` con `PROTECT` | `test_p04_jerarquia.py` | Log 1950 |
 | Código único (global en Empresa, dentro del padre en el resto) | `UniqueConstraint` en `organizacion/models.py` | `test_p05_organizacion.py` | Log 1950 |
 | Empresa derivada de la jerarquía | Propiedad calculada en `cuentas/models.py`; sin columna `empresa_id` | `test_p04_jerarquia.py` | Log 1950 |
 | Sin huérfanos ni asociaciones nuevas con padres inactivos | `clean()` de `UnidadOrganizacional` y `Usuario`; selectores con solo padres activos | `test_p05_organizacion.py`, `test_usuarios_admin.py` | Log 1950 |
-| Política de desactivación con dependencias (D1) | `dependientes_activos()` en `organizacion/models.py` y `catalogo/models.py` | `test_d1_organizacion.py`, `test_d1_catalogo.py` | Log 1950; captura `prompt07-d1-rechazo.png` |
+| Política de desactivación con dependencias (D1) | `dependientes_activos()` en `organizacion/models.py` y `catalogo/models.py` | `test_d1_organizacion.py`, `test_d1_catalogo.py` | Log 1950; captura [prompt07-d1-rechazo.png](evidencias/prompt07-d1-rechazo.png) |
 
 ### 3.3 Catálogo de servicios
 
@@ -417,9 +417,9 @@ Las rutas de código son relativas a `src/`. Las pruebas están en `tests/`. "Ca
 | Catálogos de clase, criticidad y tipo como opciones controladas | `catalogo/forms.py` (`OpcionActivaChoiceField`) | `test_p05_catalogo.py`, `test_ficha_catalogo.py` | Log 1950 |
 | Todos los campos del Excel y código único por entidad | Columnas A a L en `ServicioNivel2`, `valores_originales` en `importacion/models.py` | `test_p05_catalogo.py`, `test_ficha_catalogo.py` | Log 1950 |
 | CRUD y validación de obligatorios y referencias en el servidor | `catalogo/views.py`, `catalogo/forms.py`, `guardar_servicio_nivel2` en `catalogo/servicios.py` | `test_p05_catalogo.py`, `test_p03_catalogo.py` | Log 1950 |
-| `mínimo ≤ máximo`; ausente no es cero | `ck_n2_minimo_le_maximo`, `clean()`, `_texto_o_nulo` en `catalogo/forms.py` | `test_p09_minimo_maximo.py` | Log 1950; captura `prompt08-minimo-maximo.png` |
-| Búsqueda, filtros y paginación | `catalogo/views.py` (`Nivel2ListaView`) | `test_p10_busqueda.py` | Log 1950; captura `prompt09-listado.png` |
-| Ficha con todos los atributos y su nivel 1 | `templates/catalogo/nivel2_detalle.html`, `_trazabilidad.html` | `test_ficha_catalogo.py`, `test_p06_importacion.py::test_p06_trazabilidad_en_la_ficha` | Log 1950; captura `prompt09-ficha-se12.png` |
+| `mínimo ≤ máximo`; ausente no es cero | `ck_n2_minimo_le_maximo`, `clean()`, `_texto_o_nulo` en `catalogo/forms.py` | `test_p09_minimo_maximo.py` | Log 1950; captura [prompt08-minimo-maximo.png](evidencias/prompt08-minimo-maximo.png) |
+| Búsqueda, filtros y paginación | `catalogo/views.py` (`Nivel2ListaView`) | `test_p10_busqueda.py` | Log 1950; captura [prompt09-listado.png](evidencias/prompt09-listado.png) |
+| Ficha con todos los atributos y su nivel 1 | `templates/catalogo/nivel2_detalle.html`, `_trazabilidad.html` | `test_ficha_catalogo.py`, `test_p06_importacion.py::test_p06_trazabilidad_en_la_ficha` | Log 1950; captura [prompt09-ficha-se12.png](evidencias/prompt09-ficha-se12.png) |
 | Sección responsable y usuario de esa sección (D9) | `validar_responsables` y `asignar_responsables` en `catalogo/servicios.py`, `Usuario.clean()`, `Puesto.clean()` | `test_p11_responsable.py` | Log 1950 |
 | Al menos 3 asignaciones de demostración | `catalogo/management/commands/cargar_demo.py` | `test_cargar_demo.py` | [cargar-demo-20261003-0850.log](evidencias/cargar-demo-20261003-0850.log) (4 asignaciones) |
 
@@ -429,11 +429,11 @@ Las rutas de código son relativas a `src/`. Las pruebas están en `tests/`. "Ca
 |---|---|---|---|
 | Importador por comando, repetible, con resumen | `importacion/management/commands/importar_catalogo.py`, `importacion/importador.py`, `scripts/importar.sh` | `test_p06_importacion.py`, `test_p07_reimportacion.py` | Logs `importacion-20261003-0850.log` y `-0850-2.log` |
 | 1. Celdas combinadas | `importacion/lector.py` (`leer_libro`) | `test_p06_importacion.py::test_p06_filas_de_continuacion_y_filas_42_67_no_crean_servicios` | Log de importación (49 continuaciones) |
-| 2. Conflicto SE.12 | Nombre canónico B99 y evidencia (D3) en `importador.py` | `test_p08_se12_ausencias.py::test_p08_se12_nombre_canonico_y_evidencia` | Log de importación; captura `prompt09-ficha-se12.png` |
+| 2. Conflicto SE.12 | Nombre canónico B99 y evidencia (D3) en `importador.py` | `test_p08_se12_ausencias.py::test_p08_se12_nombre_canonico_y_evidencia` | Log de importación; captura [prompt09-ficha-se12.png](evidencias/prompt09-ficha-se12.png) |
 | 3. Códigos SE.12.n como texto | Sin normalizar (D5) | `test_p08_se12_ausencias.py` | Log de importación |
 | 4. Atributos incompletos | NULL y `PENDIENTE_REVISION` (D6) | `test_p08_se12_ausencias.py::test_p08_filas_99_a_101_con_null_y_pendiente_revision` | Log de importación |
 | 5. Continuaciones, filas sin código y listas | Clasificación por columna C; `FILA_SIN_CODIGO` (D2) | `test_p06_importacion.py` | Log de importación |
-| 6. Trazabilidad y conflictos de atributos | `OrigenServicio`, `Observacion`, `CONFLICTO_ATRIBUTOS` | `test_p06_importacion.py::test_p06_trazabilidad_en_la_ficha`, `test_importacion_pantalla.py` | Captura `prompt09-ejecuciones.png` |
+| 6. Trazabilidad y conflictos de atributos | `OrigenServicio`, `Observacion`, `CONFLICTO_ATRIBUTOS` | `test_p06_importacion.py::test_p06_trazabilidad_en_la_ficha`, `test_importacion_pantalla.py` | Captura [prompt09-ejecuciones.png](evidencias/prompt09-ejecuciones.png) |
 | 12 N1 y 46 N2 | Controles `CONTROL_CONTEO` | `test_p06_importacion.py::test_p06_importar_original_produce_12_n1_y_46_n2` | Logs de importación (12/46 PASA) |
 | Excel original sin modificar | `data/CatalogoServicios.xlsx.sha256`, montaje `:ro`, paso de `verificar.sh` | `test_p06_importacion.py::test_original_con_hash_alterado_aborta` | Paso "SHA-256 del Excel sin cambios" en cada log de verificación |
 
@@ -526,12 +526,10 @@ Los logs de importación registran `b63b77f` como commit; el importador quedó g
 | `--archivo` siempre comparaba con el hash del original | Revisión mía del prompt 09 | Hash registrado y controles informativos salvo `--exigir-controles` | `verificacion-20261003-0906.log`, `tests/test_p06_importacion.py` |
 | Cinco líneas de más de 100 columnas en las pruebas | `ruff check` en `verificar.sh` | El asistente partió las líneas | `verificacion-20261003-1931.log` (falla), `-1932.log` (pasa) |
 
-### Pendiente
+### Prueba desde un clon limpio
 
-- [PENDIENTE: ejecutar `bash scripts/verificar.sh --completo` sobre el commit final de entrega, después de
-  commitear este documento y el README, y registrar aquí fecha, commit y resultado.]
-- [PENDIENTE: ejecutar la sección 2 del README desde un clon limpio en un directorio nuevo y guardar el log;
-  no tengo un log de una ejecución completa desde un clon limpio.]
+- Prueba desde un clon limpio (2026-10-03, commit `f4c61e2`): cloné el repositorio en otra carpeta con un nombre de proyecto de Docker distinto, para usar una base vacía, y seguí solo el README. Los contenedores quedaron healthy, la primera importación dio 12/46 PASA con 76 creados, la segunda dio 0 creados, `crear_cuentas_demo` y `cargar_demo` funcionaron (4 asignaciones) y entré con los dos roles en el navegador. Logs: [importacion-20261003-2039.log](evidencias/clon-limpio/importacion-20261003-2039.log) y [importacion-20261003-2041.log](evidencias/clon-limpio/importacion-20261003-2041.log).
+- En el clon limpio, `bash scripts/verificar.sh --completo` terminó con RESULTADO: PASA en todos los pasos, incluida la persistencia P12 ([verificacion-20261003-2041.log](evidencias/clon-limpio/verificacion-20261003-2041.log), [persistencia-20261003-2045.log](evidencias/clon-limpio/persistencia-20261003-2045.log)). Después de esa prueba solo cambié documentación.
 
 ## 9. Docker, persistencia y recuperación del entorno
 

@@ -67,15 +67,31 @@ Decisiones del asistente que revisé:
 - Agregó el campo `es_demo` para marcar la jerarquía de demostración y la variable opcional `COOKIES_SEGURAS` para HTTPS.
 - Cambió una contraseña de las pruebas porque el validador de Django la rechazó por parecerse al usuario.
 
-Captura: `../evidencias/prompt06-resultado.png`.
+Captura: 
+
+![prompt06-resultado](../evidencias/prompt06-resultado.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí. `bash scripts/verificar.sh` terminó con código 0 y 44 pruebas aprobadas (log `docs/evidencias/verificacion-20261002-1921.log`). `crear_cuentas_demo` se ejecutó dos veces sin duplicar nada, y sin una variable falla con código 1.
 
 El asistente dijo que no probó el login en el navegador porque para eso tenía que leer `.env`. Lo probé yo en Firefox:
-- Contraseña incorrecta: mensaje genérico (`../evidencias/prompt06-login-invalido.png`).
-- Admin: ve la lista de usuarios (`../evidencias/prompt06-admin-usuarios.png`).
-- Consulta entrando a mano a `/usuarios/`: Acceso denegado 403 (`../evidencias/prompt06-consulta-403.png`).
+- Contraseña incorrecta: mensaje genérico (
+
+![prompt06-login-invalido](../evidencias/prompt06-login-invalido.png)
+
+).
+- Admin: ve la lista de usuarios (
+
+![prompt06-admin-usuarios](../evidencias/prompt06-admin-usuarios.png)
+
+).
+- Consulta entrando a mano a `/usuarios/`: Acceso denegado 403 (
+
+![prompt06-consulta-403](../evidencias/prompt06-consulta-403.png)
+
+).
 
 ## Problemas observados e iteración
 No hizo falta revisar el prompt. Al terminar, Claude Code sugirió una respuesta automática para dividir los commits; no la usé e hice un solo commit porque fue un solo prompt.

@@ -59,7 +59,11 @@ Sí, corrige §8.3: scripts/reiniciar_datos_prueba.sh ya existe; es el único sc
 - §8.3 actualizado con el script de reinicio y su confirmación "BORRAR".
 - Fila v3 en el registro de cambios y `fases.md` con las fases 4 a 8 realizadas.
 
-Captura: `../evidencias/prompt10-contexto-v3.png`.
+Captura: 
+
+![prompt10-contexto-v3](../evidencias/prompt10-contexto-v3.png)
+
+.
 
 ## ¿Cumplió el criterio de aceptación?
 Sí. `grep -n "v3" AGENTS.md` muestra la fila del registro y la sección de reglas nuevas. `AGENTS.md` quedó en 207 líneas, y el `grep` de "pendiente" y "cuando exista" solo encuentra usos correctos (`PENDIENTE_REVISION` y P12, que todavía no estaba hecha).
