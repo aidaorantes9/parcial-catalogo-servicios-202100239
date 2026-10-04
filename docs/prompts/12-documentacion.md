@@ -4,7 +4,7 @@
 - Modelo: Claude Opus 5.5 (cuenta Claude Pro)
 - Fecha de uso: 2026-10-03
 - Fase: Documentación
-- Commit resultante: (se completa después del commit)
+- Commit resultante: `7b37fac`
 
 ## Objetivo
 Escribir `README.md` y `docs/RESOLUCION.md` basados solo en lo que existe en el repositorio, con reglas de estilo para que el texto quede en primera persona y sin guiones largos.
