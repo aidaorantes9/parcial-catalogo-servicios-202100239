@@ -14,7 +14,40 @@ Limpié la sesión con `/clear`. Le indiqué leer `modelo-datos.md` (organizaci�
 
 ## Prompt utilizado
 ```
-[PEGAR AQUÍ EL PROMPT 7 COMPLETO]
+OBJETIVO
+Implementar el mantenimiento de Empresa, Área, Departamento, Sección y Puesto (los modelos ya existen).
+
+CONTEXTO
+Lee AGENTS.md (ya cargado), docs/contexto/modelo-datos.md (organización, decisión D1 y supuestos), docs/contexto/seguridad.md y la sección 3.2 de docs/contexto/enunciado.md. Reutiliza los mixins de cuentas/permisos.py y la plantilla base existente.
+
+INSTRUCCIONES
+1. Para cada entidad: listado paginado con búsqueda por código y nombre y filtro por estado y por padre; detalle que muestre el padre, la ruta completa hasta la empresa y los hijos directos; crear, editar, desactivar y reactivar (baja lógica). Usa vistas genéricas o una base común para no repetir código.
+2. Permisos: ADMIN puede todo. CONSULTA puede ver listados y detalles (lectura de datos funcionales) pero recibe 403 en cualquier escritura, aunque haga la petición directa.
+3. Validaciones en servidor con mensajes comprensibles en español:
+   - Código duplicado dentro del mismo padre (y en Empresa, duplicado global), sin distinguir mayúsculas si así está en el modelo.
+   - Padre inexistente o inactivo al crear o al cambiar de padre.
+   - Aplica la decisión D1: no se puede desactivar un registro con dependientes activos (incluye usuarios activos en un puesto); se muestra la lista de dependientes que lo impiden.
+   - No se puede reactivar un registro si su padre está inactivo.
+   - Nunca DELETE físico desde la interfaz.
+4. En el detalle del Puesto, muestra sus usuarios. En el detalle y la lista de usuarios, muestra la empresa derivada (puesto → sección → departamento → área → empresa) sin guardarla.
+5. Agrega las entradas al menú y una página de inicio con conteos básicos (empresas, áreas, departamentos, secciones, puestos y usuarios activos).
+6. Pruebas en tests/ con marcadores p04 y p05 y docstring con el ID:
+   - P04: crear una jerarquía completa a través de las vistas (POST como ADMIN), crear un usuario en el puesto y comprobar que se recupera toda la ruta y la empresa derivada.
+   - P05 (organización): código duplicado dentro del mismo padre rechazado con mensaje; el mismo código en otro padre sí se permite; padre inexistente y padre inactivo rechazados con mensaje.
+   - Política D1: desactivar con dependientes activos se rechaza y lista los dependientes; sin dependientes activos se permite; reactivar con padre inactivo se rechaza.
+   - Extiende P03: CONSULTA puede hacer GET de listados y detalles de organización y recibe 403 en crear, editar, desactivar y reactivar.
+7. Documenta brevemente en docs/contexto/modelo-datos.md (sección de D1) cómo quedó implementada la política. No agregues fila al registro de cambios de AGENTS.md.
+
+RESTRICCIONES
+- No cambies la lógica de autenticación existente salvo que sea necesario, y explícalo si lo haces.
+- Interfaz simple, coherente con las plantillas existentes.
+- No uses `down -v`. No hagas commit.
+
+SALIDA ESPERADA
+Vistas, formularios, plantillas, URLs, pruebas y la salida real de `bash scripts/verificar.sh`.
+
+CRITERIO DE ACEPTACIÓN
+`bash scripts/verificar.sh` termina con código 0 con P03, P04 y P05 en verde.
 ```
 
 ## Extracto de la salida
