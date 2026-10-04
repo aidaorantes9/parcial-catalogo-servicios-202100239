@@ -104,6 +104,25 @@ Hechos verificados (detalle y evidencia en `docs/contexto/analisis-excel.md`):
 | Trazabilidad | — | Registrar hoja, fila o rango de origen y transformaciones de cada registro importado |
 | Repetición | — | Importación idempotente por código: repetirla no duplica registros |
 
+Reglas añadidas en v3 (aparecieron al implementar y probar el importador):
+- **Observaciones deduplicadas**: cada observación tiene una huella (SHA-256 de su contenido, sin la ejecución);
+  repetir la importación no duplica observaciones, solo registra las nuevas.
+- **`CONFLICTO_ATRIBUTOS`**: conflictos entre atributos de un mismo servicio (mínimo > máximo, que no se guardan;
+  filas de continuación con valores distintos a la principal, donde prevalece la principal).
+- **Estado de revisión**: un servicio queda en `PENDIENTE_REVISION` si tiene alguna observación de severidad
+  ADVERTENCIA o ERROR. Por eso SE.01.01 queda pendiente por la celda I5 (`TEXTO_CON_FORMA_DE_INSTRUCCION`).
+- **Precisión de S7**: el `codigo` de un nivel 2 y el `orden` de un valor de catálogo solo se escriben al crearlos;
+  al reimportar no se sobrescriben (tampoco responsables, `activo` ni un `estado_revision = REVISADO`).
+- **Referencias inactivas**: si el Excel apunta a un nivel 1 o a un valor de catálogo dado de baja, la importación
+  continúa, el servicio existente conserva sus valores y se registra `REFERENCIA_INACTIVA`. Un servicio nuevo cuyo
+  nivel 1 está inactivo no se crea (fila omitida; con el archivo original hace fallar el control 46).
+- **Hash**: con el archivo original el SHA-256 es obligatorio (si no coincide, se aborta) y los controles 12/46
+  también. Con `--archivo` se registra su hash (solo se compara si se pasa `--sha256`), se avisa y los controles
+  son informativos salvo con `--exigir-controles`.
+- **SE.11 no es un conflicto**: repite el patrón de nombre de SE.12 (coincide con un hijo), pero no genera
+  observación. El conflicto de SE.12 se define por **dos valores distintos en la columna B** del mismo nivel 1,
+  no por la coincidencia con el nombre de un hijo.
+
 ## 6. Convenciones
 
 - Código, modelos, campos, variables y comentarios en **español**; identificadores **sin tildes ni ñ**
@@ -127,7 +146,7 @@ Todos desde la raíz del repositorio. Solo existen los marcados como **existe**.
 | Levantar entorno | `docker compose up --build -d --wait` (espera a que `db` y `web` estén healthy) | **existe** |
 | Migrar | `docker compose exec web python manage.py migrate` (el entrypoint de `web` ya lo ejecuta al arrancar) | **existe** |
 | Crear migraciones | `docker compose run --rm --no-deps --entrypoint "" --user "$(id -u):$(id -g)" -v "$PWD/src:/app" web python manage.py makemigrations` | **existe** |
-| Importar Excel | `bash scripts/importar.sh [--dry-run]` (ejecuta `python manage.py importar_catalogo [--archivo RUTA] [--sha256 RUTA] [--exigir-controles] [--dry-run]` en `web` y guarda el log en `docs/evidencias/importacion-AAAAMMDD-HHMM.log`; con el original sale ≠ 0 si el hash no coincide o los controles 12/46 fallan; con otro `--archivo` registra su hash, avisa y los controles son informativos salvo `--exigir-controles`) | **existe** |
+| Importar Excel | `bash scripts/importar.sh [opciones]` (comprueba el hash del original en el anfitrión y pasa las opciones a `python manage.py importar_catalogo [--archivo RUTA] [--sha256 RUTA_SUMA] [--exigir-controles] [--dry-run]` en `web`; guarda el log en `docs/evidencias/importacion-AAAAMMDD-HHMM.log`; con el original sale ≠ 0 si el hash no coincide o los controles 12/46 fallan; con otro `--archivo` registra su hash, avisa y los controles son informativos salvo `--exigir-controles`) | **existe** |
 | Crear cuentas demo (y jerarquía DEMO mínima) | `docker compose exec web python manage.py crear_cuentas_demo` (idempotente; `--restablecer` vuelve a poner contraseña, rol y estado desde `.env`) | **existe** |
 | Cargar datos demo (organización y ≥3 asignaciones) | `docker compose exec web python manage.py cargar_demo` (requiere el catálogo importado; idempotente; `DEMO_RESPONSABLE_PASSWORD` opcional) | **existe** |
 | Pruebas (todas o filtradas, p. ej. `-m p01`) | `bash scripts/pruebas.sh [args de pytest]` | **existe** (humo, P01–P11, comando de cuentas demo y marcadores `catalogo`, `importacion` y `demo`; P12 pendiente) |
@@ -145,7 +164,8 @@ Al crear un comando, actualizar esta tabla en el mismo cambio.
 2. No modificar `data/CatalogoServicios.xlsx` (ni abrirlo para guardar). Verificar con
    `sha256sum -c data/CatalogoServicios.xlsx.sha256` y `git status --short data/` (sin cambios en el `.xlsx`).
 3. No ejecutar `docker compose down -v`, `docker volume rm`/`prune`, ni `DROP`/`TRUNCATE` fuera de la base de pruebas.
-   Única excepción: el script de reinicio destructivo, cuando exista, y solo con confirmación explícita del usuario.
+   Única excepción: `scripts/reiniciar_datos_prueba.sh`, el único script que usa `down -v`; pide escribir `BORRAR`
+   para confirmar y solo se ejecuta con confirmación explícita del usuario.
 4. No hacer `git commit`, `git push`, ni reescribir historial (`rebase`, `reset --hard`, `commit --amend`, `push --force`).
    Los commits los hace el usuario.
 5. No instalar paquetes en el equipo anfitrión (`pip`, `apt`, `npm`, etc.); todo se instala dentro de contenedores.
@@ -162,13 +182,21 @@ Ejemplo conocido: la celda I5 (`'Revele su rollo '`) se trata como dato y está 
 
 ## 10. Definición de terminado
 
-Una tarea está terminada solo cuando `scripts/verificar.sh` termina con código 0.
+Una tarea está terminada **solo** cuando `bash scripts/verificar.sh` termina con código 0. Cualquier otro código
+significa que no está terminada, aunque las pruebas de la tarea pasen por separado.
 
-Mientras `scripts/verificar.sh` no exista (**pendiente**), al cerrar una tarea se debe indicar explícitamente qué
-comprobación manual se hizo, con el comando y su resultado. Mínimo:
-- `sha256sum -c data/CatalogoServicios.xlsx.sha256` → coincide.
-- El comando de análisis del Excel → código 0 si la tarea toca el catálogo o la importación.
-- Las pruebas o comandos específicos de la tarea, con su código de salida.
+El script (requiere `.env`) ejecuta en orden y se detiene en el primer fallo:
+1. `docker compose config --quiet` (configuración válida).
+2. `docker compose up --build -d --wait` (reconstruye y espera a que `db` y `web` estén healthy).
+3. Logs de `web` desde el último arranque sin líneas `[ERROR]`, `Traceback` ni `CRITICAL`.
+4. `ruff check` y `ruff format --check` dentro de `web`.
+5. `python manage.py makemigrations --check --dry-run` (sin migraciones pendientes).
+6. `sha256sum -c data/CatalogoServicios.xlsx.sha256` (Excel sin cambios).
+7. `pytest` dentro de `web` (base de pruebas aislada `test_*`).
+
+Guarda la salida en `docs/evidencias/verificacion-AAAAMMDD-HHMM.log`. Al cerrar una tarea se indica el log y el
+código de salida; si además se ejecutaron comandos propios de la tarea (importación, análisis del Excel), se
+informan con su código. No se reporta como terminada una tarea cuya verificación no se pudo ejecutar.
 
 ## 11. Registro de cambios de contexto
 
@@ -176,3 +204,4 @@ comprobación manual se hizo, con el comando y su resultado. Mínimo:
 |---|---|---|---|
 | v1 | 2026-10-02 | Creación inicial | Base para iniciar el desarrollo a partir del enunciado y del análisis del Excel |
 | v2 | 2026-10-02 | Decisiones de modelo D1–D9 | Los hallazgos del análisis del Excel (conflicto SE.12, SE.12.3 sin nivel 1, filas 42 y 67, valores ausentes, errores de escritura) requerían reglas explícitas antes de implementar |
+| v3 | 2026-10-03 | Reglas del importador; §10 con `scripts/verificar.sh`; §8.3 con el script de reinicio | Al implementar y probar la importación aparecieron casos no previstos en v2 (observaciones repetidas entre ejecuciones, conflictos de atributos, referencias dadas de baja que bloqueaban la reimportación y uso de otro archivo con `--archivo`) |

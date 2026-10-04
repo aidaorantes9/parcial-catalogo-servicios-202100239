@@ -4,7 +4,7 @@
 - Modelo: Claude Opus 5.5 (cuenta Claude Pro)
 - Fecha de uso: 2026-10-03
 - Fase: Importación
-- Commit resultante: (se completa después del commit)
+- Commit resultante: `524f946`
 
 ## Objetivo
 Implementar un importador repetible y trazable del Excel original, que respete todas las decisiones del modelo, y un comando que cree al menos tres asignaciones de responsables para la demostración.
